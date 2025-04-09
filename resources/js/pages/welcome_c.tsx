@@ -4,23 +4,23 @@ import ThirdPic from '@/assets/Group_3.png';
 import FourthPic from '@/assets/Group_4.png';
 import FifthPic from '@/assets/Group_5.png';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-type WelcomePageProps = SharedData & {
-    rightCardContent: string;
-};
+type StepKey = 'First step' | 'Second step' | 'Third step' | 'Fourth step' | 'Fifth step' | 'Final step';
 
-const imageArray = [FirstPic, SecondPic, ThirdPic, FourthPic, FifthPic];
+interface StepContent {
+    header: string;
+    content: string;
+}
 
-const stepContentMap = {
+const stepContentMap: Record<StepKey, StepContent> = {
     'First step': {
         header: 'Meet your builder and design your home',
-        content:
-            "This is where your journey begins! You'll sit down with your builder to discuss your vision, needs, and budget. Bring any inspiration photos or ideas you have — this is the time to explore layouts, room count, and style preferences. You'll walk away with a clear plan and timeline. Get ready for your journey",
+        content: 'This is where your journey begins!...',
     },
     'Second step': {
         header: 'Plumbing Company',
@@ -49,6 +49,16 @@ const stepContentMap = {
     },
 };
 
+// type WelcomePageProps = SharedData & {
+//     rightCardContent: StepKey;
+// };
+type WelcomePageProps = SharedData & {
+    rightCardContent: StepKey;
+    status: 'not requested' | 'on hold' | 'done';
+};
+
+const imageArray = [FirstPic, SecondPic, ThirdPic, FourthPic, FifthPic];
+
 const contentToImageMap: Record<string, number> = {
     'First step': 0,
     'Second step': 1,
@@ -59,11 +69,11 @@ const contentToImageMap: Record<string, number> = {
 };
 
 export default function Welcome_c() {
-    const { auth, rightCardContent } = usePage<WelcomePageProps>().props;
+    const { auth, rightCardContent, status } = usePage<WelcomePageProps>().props;
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [direction, setDirection] = useState<1 | -1>(1);
     const targetImageIndex = contentToImageMap[rightCardContent] || 0;
-    const currentStepContent = stepContentMap[rightCardContent] || stepContentMap['First step'];
+    const currentStepContent = stepContentMap[rightCardContent];
 
     // Elevator-style animation
     useEffect(() => {
@@ -121,12 +131,10 @@ export default function Welcome_c() {
                         )}
                     </nav>
                 </header>
-
                 <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex w-full max-w-[335px] flex-col-reverse gap-1 lg:max-w-4xl lg:flex-row">
-                        {/* Left Card with Elevator Animation */}
-                        <Card className="w-full overflow-hidden bg-[#E6E6E5] p-0 dark:bg-[#121212]">
-                            <div className="relative aspect-square w-full overflow-hidden">
+                    <main className="flex h-[80vh] w-full flex-col-reverse gap-1 lg:w-[90vw] lg:max-w-[1200px] lg:flex-row">
+                        <Card className="h-full w-full overflow-hidden bg-[#E6E6E5] p-0 lg:w-2/3 dark:bg-[#121212]">
+                            <div className="relative h-full w-full overflow-hidden">
                                 <AnimatePresence custom={direction}>
                                     <motion.div
                                         key={currentImageIndex}
@@ -151,19 +159,12 @@ export default function Welcome_c() {
                                 </AnimatePresence>
                             </div>
                         </Card>
-
-                        {/* Right Card with Step-Specific Content */}
-                        <Card className="w-full bg-[#E6E6E5] transition-transform duration-300 hover:shadow-lg dark:bg-[#121212]">
+                        {/* <Card className="h-full w-full overflow-y-auto bg-[#E6E6E5] transition-transform duration-300 hover:shadow-lg lg:w-1/3 dark:bg-[#121212]">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold">{currentStepContent.header}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="prose prose-sm dark:prose-invert max-w-none">
-                                    {/* {currentStepContent.content.split('\n').map((paragraph, i) => (
-                                        <p key={i} className="mb-3 last:mb-0">
-                                            {paragraph}
-                                        </p>
-                                    ))} */}
                                     {currentStepContent.content.split('\n').map((paragraph: string, i: number) => (
                                         <p key={i} className="mb-3 last:mb-0">
                                             {paragraph}
@@ -176,11 +177,64 @@ export default function Welcome_c() {
                                         Let us handle it
                                     </Button>
                                 </div>
+                                <div className="mt-4 flex items-center gap-2">
+                                    <span className="text-sm font-medium">Status:</span>
+                                    <span
+                                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                                            status === 'not requested'
+                                                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                : status === 'on hold'
+                                                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                                  : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                        }`}
+                                    >
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </span>
+                                </div>
                             </CardContent>
+                        </Card> */}
+                        <Card className="flex h-full w-full flex-col bg-[#E6E6E5] transition-transform duration-300 hover:shadow-lg lg:w-1/3 dark:bg-[#121212]">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">{currentStepContent.header}</CardTitle>
+                            </CardHeader>
+
+                            {/* Scrollable content area */}
+                            <div className="flex-1 overflow-y-auto px-6 pb-4">
+                                <div className="prose prose-sm dark:prose-invert max-w-none">
+                                    {currentStepContent.content.split('\n').map((paragraph: string, i: number) => (
+                                        <p key={i} className="mb-3 last:mb-0">
+                                            {paragraph}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Fixed bottom section */}
+                            <div className="p-6 pt-0">
+                                <div className="flex flex-wrap gap-2">
+                                    <Button className="min-w-[120px]">Do it yourself</Button>
+                                    <Button className="min-w-[120px]" variant="outline">
+                                        Let us handle it
+                                    </Button>
+                                </div>
+                                <div className="mt-4 flex items-center gap-2">
+                                    <span className="text-sm font-medium">Status:</span>
+                                    <span
+                                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                                            status === 'not requested'
+                                                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                : status === 'on hold'
+                                                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                                  : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                        }`}
+                                    >
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </span>
+                                </div>
+                            </div>
                         </Card>
                     </main>
                 </div>
-                <div className="hidden h-14.5 md:block"></div>
             </div>
         </>
     );
