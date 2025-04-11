@@ -33,7 +33,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Check user's stage and redirect accordingly
+        $user = Auth::user();
+        
+        // If stage is 0 (admin), redirect to dashboard
+        // Otherwise redirect to home_c
+        if ($user && $user->stage == 0) {
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else {
+            return redirect()->route('home_c');
+        }
     }
 
     /**

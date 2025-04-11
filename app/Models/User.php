@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'stage', // Added stage to fillable attributes
     ];
 
     /**
@@ -43,6 +44,17 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'stage' => 'float', // Added stage casting to ensure it's always an integer
         ];
+    }
+    
+    /**
+     * Check if user is an administrator.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->stage === 0;
     }
 }
