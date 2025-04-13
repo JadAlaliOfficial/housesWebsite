@@ -9,7 +9,7 @@ class WelcomeCController extends Controller
 {
     public function index()
     {
-        return Inertia::render('welcome_c', [
+        return Inertia::render('welcome', [
             'user' => Auth::user() // Pass the authenticated user
         ]);
     }

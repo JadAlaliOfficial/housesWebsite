@@ -119,7 +119,11 @@ class DashboardController extends Controller
             ]);
         }
         
-        return redirect()->route('dashboard');
+        if ($user && $user->stage == 0) {
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else {
+            return redirect()->route('home');
+        }
     }
     
     /**

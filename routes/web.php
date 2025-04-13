@@ -4,9 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WelcomeCController;
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+
 
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -23,7 +21,7 @@ require __DIR__ . '/auth.php';
 
 //tests
 Route::middleware(['auth'])->group(function () {
-    Route::get('/c', [WelcomeCController::class, 'index'])->name('home_c');
+    Route::get('/', [WelcomeCController::class, 'index'])->name('home');
 Route::post('/users/{id}/move-to-next-stage', [DashboardController::class, 'moveToNextStage'])->name('users.moveToNextStage');
 Route::post('/users/{id}/move-to-stage', [DashboardController::class, 'moveToStage'])->name('users.moveToStage');
 });
