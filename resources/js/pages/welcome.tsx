@@ -1,4 +1,4 @@
-import FirstPic from '@/assets/Group_1.jpg';
+import FirstPic from '@/assets/Group_1.png';
 import WebsiteIcon from '@/assets/Group_1.svg';
 import SecondPic from '@/assets/Group_2.jpg';
 import ThirdPic from '@/assets/Group_3.jpg';
@@ -119,7 +119,8 @@ export default function Welcome_c() {
         },
     ];
 
-    const activeStep = user.stage === 6 ? steps.length - 1 : Math.floor(Number(user.stage)) - 1;
+    // Modified to handle the final step as completed
+    const activeStep = user.stage === 6 ? steps.length : Math.floor(Number(user.stage)) - 1;
 
     const { step, status } = getStepAndStatus(Number(user.stage));
     const currentStepContent = stepContentMap[step];
@@ -178,10 +179,9 @@ export default function Welcome_c() {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
-                <header className="mb-6 w-full max-w-[1200px]">
+            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-4 text-[#1b1b18] lg:justify-center lg:p-4 dark:bg-[#0a0a0a]">
+                <header className="mb-2 w-full max-w-[1200px]">
                     <nav className="flex w-full items-center justify-between">
-                        
                         <div className="flex items-center">
                             <img
                                 src={WebsiteIcon}
@@ -232,133 +232,72 @@ export default function Welcome_c() {
                         </div>
                     </nav>
                 </header>
-
-                <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    {/* Main Content - Equal width cards */}
-                    <main className="flex h-[75vh] w-full flex-col gap-4 lg:w-[90vw] lg:max-w-[1200px] lg:flex-row">
-                        {/* Left Card - Progress Overview */}
-                        <Card className="flex h-full w-full flex-col bg-[#E6E6E5] p-6 lg:w-1/3 dark:bg-[#121212]">
-                            <CardHeader className="p-0 pb-4">
-                                <CardTitle className="text-lg font-semibold">Progress Overview</CardTitle>
-                            </CardHeader>
-                            <div className="flex-1 overflow-y-auto">
-                                <Box sx={{ maxHeight: '100%', overflowY: 'auto' }}>
-                                    <Stepper
-                                        activeStep={activeStep}
-                                        orientation="vertical"
-                                        sx={{
-                                            '& .MuiStepConnector-root': {
-                                                ml: 1.5,
+                <div className="flex w-full flex-col items-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
+                    {/* Horizontal Stepper */}
+                    <div className="sticky top-0 z-10 w-full max-w-[1200px] px-4 py-4 bg-[#FDFDFC] dark:bg-[#0a0a0a] shadow-sm">
+                        <Box sx={{ width: '100%' }}>
+                            <Stepper
+                                activeStep={activeStep}
+                                orientation="horizontal"
+                                sx={{
+                                    '& .MuiStepConnector-root': {
+                                        top: 12,
+                                    },
+                                    '& .MuiStepConnector-line': {
+                                        borderColor: '#d1d5db',
+                                        '@media (prefers-color-scheme: dark)': {
+                                            borderColor: '#374151',
+                                        },
+                                    },
+                                    '& .Mui-completed .MuiStepConnector-line': {
+                                        borderColor: '#10b981',
+                                    },
+                                    '& .MuiStepLabel-root': {
+                                        '& .MuiStepLabel-label': {
+                                            fontSize: '0.875rem',
+                                            fontWeight: 500,
+                                            color: '#1f2937',
+                                            // Hide labels on screens smaller than lg
+                                            '@media (max-width: 1024px)': {
+                                                display: 'none',
                                             },
-                                            '& .MuiStepConnector-line': {
-                                                borderColor: '#d1d5db',
-                                                '@media (prefers-color-scheme: dark)': {
-                                                    borderColor: '#374151',
-                                                },
+                                        },
+                                        '&.Mui-completed .MuiStepLabel-label': {
+                                            color: '#10b981 !important',
+                                        },
+                                        '&.Mui-active .MuiStepLabel-label': {
+                                            color: '#3b82f6 !important',
+                                        },
+                                    },
+                                    '@media (prefers-color-scheme: dark)': {
+                                        '& .MuiStepLabel-root': {
+                                            '& .MuiStepLabel-label': {
+                                                color: 'white',
                                             },
-                                            '& .Mui-completed .MuiStepConnector-line': {
-                                                borderColor: '#10b981',
+                                            '&.Mui-completed .MuiStepLabel-label': {
+                                                color: '#10b981 !important',
                                             },
-                                        }}
-                                    >
-                                        {steps.map((stepItem, index) => (
-                                            <Step key={stepItem.label} expanded completed={index <= activeStep || user.stage === 6}>
-                                                <StepLabel
-                                                    sx={{
-                                                        '&.MuiStepLabel-root': {
-                                                            '& .MuiStepLabel-label': {
-                                                                fontSize: '0.875rem',
-                                                                fontWeight: 500,
-                                                                color: '#1f2937',
-                                                            },
-                                                            '&.Mui-completed .MuiStepLabel-label': {
-                                                                color: '#10b981 !important',
-                                                            },
-                                                            '&.Mui-active .MuiStepLabel-label': {
-                                                                color: '#3b82f6 !important',
-                                                            },
-                                                        },
-                                                        '@media (prefers-color-scheme: dark)': {
-                                                            '&.MuiStepLabel-root': {
-                                                                '& .MuiStepLabel-label': {
-                                                                    color: 'white',
-                                                                },
-                                                                '&.Mui-completed .MuiStepLabel-label': {
-                                                                    color: '#10b981 !important',
-                                                                },
-                                                                '&.Mui-active .MuiStepLabel-label': {
-                                                                    color: '#3b82f6 !important',
-                                                                },
-                                                            },
-                                                        },
-                                                    }}
-                                                >
-                                                    {stepItem.label}
-                                                </StepLabel>
+                                            '&.Mui-active .MuiStepLabel-label': {
+                                                color: '#3b82f6 !important',
+                                            },
+                                        },
+                                    },
+                                }}
+                            >
+                                {steps.map((stepItem) => (
+                                    <Step key={stepItem.label}>
+                                        <StepLabel>{stepItem.label}</StepLabel>
+                                    </Step>
+                                ))}
+                            </Stepper>
+                        </Box>
+                    </div>
 
-                                                <StepContent
-                                                    sx={{
-                                                        borderLeft: '2px solid',
-                                                        borderColor: index <= activeStep ? '#10b981' : '#d1d5db',
-                                                        ml: 1.5,
-                                                        '@media (prefers-color-scheme: dark)': {
-                                                            borderColor: index <= activeStep ? '#10b981' : '#374151',
-                                                        },
-                                                    }}
-                                                >
-                                                    {index === activeStep && (
-                                                        <Box sx={{ mt: 1 }}>
-                                                            <Typography
-                                                                variant="caption"
-                                                                sx={{
-                                                                    display: 'inline-flex',
-                                                                    alignItems: 'center',
-                                                                    px: 1.5,
-                                                                    py: 0.5,
-                                                                    borderRadius: 4,
-                                                                    backgroundColor:
-                                                                        status === 'not requested'
-                                                                            ? '#fee2e2'
-                                                                            : status === 'on hold'
-                                                                              ? '#fef3c7'
-                                                                              : '#d1fae5',
-                                                                    color:
-                                                                        status === 'not requested'
-                                                                            ? '#b91c1c'
-                                                                            : status === 'on hold'
-                                                                              ? '#92400e'
-                                                                              : '#065f46',
-                                                                    '@media (prefers-color-scheme: dark)': {
-                                                                        backgroundColor:
-                                                                            status === 'not requested'
-                                                                                ? '#7f1d1d'
-                                                                                : status === 'on hold'
-                                                                                  ? '#78350f'
-                                                                                  : '#064e3b',
-                                                                        color:
-                                                                            status === 'not requested'
-                                                                                ? '#fecaca'
-                                                                                : status === 'on hold'
-                                                                                  ? '#fef08a'
-                                                                                  : '#a7f3d0',
-                                                                    },
-                                                                }}
-                                                            >
-                                                                {status.charAt(0).toUpperCase() + status.slice(1)}
-                                                            </Typography>
-                                                        </Box>
-                                                    )}
-                                                </StepContent>
-                                            </Step>
-                                        ))}
-                                    </Stepper>
-                                </Box>
-                            </div>
-                        </Card>
-
-                        {/* Center Card - Image */}
-                        <Card className="h-full w-full overflow-hidden bg-[#E6E6E5] p-0 lg:w-1/3 dark:bg-[#121212]">
-                            <div className="relative h-full w-full overflow-hidden">
+                    {/* Image and Content Cards */}
+                    <main className="flex w-full max-w-[1200px] mt-5 flex-col md:items-center lg:items-stretch gap-2 lg:flex-row">
+                        {/* Image Card */}
+                        <Card className="w-full flex-1 h-full bg-[#E6E6E5] p-0 md:w-1/2 lg:w-2/3 dark:bg-[#121212]">
+                            <div className="relative w-full h-full overflow-hidden" style={{ maxHeight: '400px' }}>
                                 <AnimatePresence custom={direction}>
                                     <motion.div
                                         key={currentImageIndex}
@@ -372,20 +311,22 @@ export default function Welcome_c() {
                                             damping: 25,
                                             mass: 1.2,
                                         }}
-                                        className="absolute inset-0 flex items-center justify-center"
+                                        className="flex items-center justify-center h-full"
                                     >
                                         <img
                                             src={imageArray[currentImageIndex]}
                                             loading="lazy"
                                             alt={`${step} illustration`}
-                                            className="h-auto max-h-full w-auto max-w-full object-contain"
+                                            className="w-full rounded-lg object-contain"
+                                            style={{ maxHeight: '400px' }}
                                         />
                                     </motion.div>
                                 </AnimatePresence>
                             </div>
                         </Card>
 
-                        <Card className="flex h-full w-full flex-col bg-[#E6E6E5] p-6 lg:w-1/3 dark:bg-[#121212]">
+                        {/* Content Card */}
+                        <Card className="w-full flex-1 flex flex-col bg-[#E6E6E5] p-6 md:w-1/2 lg:w-1/3 lg:h-[400px] dark:bg-[#121212]">
                             <CardHeader className="p-0 pb-4">
                                 <CardTitle className="text-lg font-semibold">{currentStepContent.header}</CardTitle>
                             </CardHeader>

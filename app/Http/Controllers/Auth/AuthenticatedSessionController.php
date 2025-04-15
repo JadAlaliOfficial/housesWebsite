@@ -41,7 +41,7 @@ class AuthenticatedSessionController extends Controller
         if ($user && $user->stage == 0) {
             return redirect()->intended(route('dashboard', absolute: false));
         } else {
-            return redirect()->route('home_c');
+            return redirect()->route('home');
         }
     }
 
