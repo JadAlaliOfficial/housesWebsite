@@ -1,9 +1,10 @@
-import FirstPic from '@/assets/Group_1.png';
 import WebsiteIcon from '@/assets/Group_1.svg';
-import SecondPic from '@/assets/Group_2.jpg';
-import ThirdPic from '@/assets/Group_3.jpg';
-import FourthPic from '@/assets/Group_4.jpg';
-import { default as FifthPic, default as FinalPic } from '@/assets/Group_5.jpg';
+import FirstPicForDesktop from '@/assets/d/d_1.png';
+import SecondPicForDesktop from '@/assets/d/d_2.png';
+import ThirdPicForDesktop from '@/assets/d/d_3.png';
+import FourthPicForDesktop from '@/assets/d/d_4.png';
+import FifthPicForDesktop from '@/assets/d/d_5.png';
+import FinalPicForDesktop from '@/assets/d/d_6.jpg'; 
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { type SharedData, type User } from '@/types';
@@ -57,7 +58,7 @@ type WelcomePageProps = SharedData & {
     user: User;
 };
 
-const imageArray = [FirstPic, SecondPic, ThirdPic, FourthPic, FifthPic, FinalPic];
+const imageArray = [FirstPicForDesktop, SecondPicForDesktop, ThirdPicForDesktop, FourthPicForDesktop, FifthPicForDesktop, FinalPicForDesktop];
 
 const getStepAndStatus = (stage: number): { step: StepKey; status: Status } => {
     const stepMap: Record<number, StepKey> = {
@@ -149,28 +150,12 @@ export default function Welcome_c() {
 
     const targetImageIndex = stepToImageIndex[step] || 0;
 
+    // Set the image index with animation
     useEffect(() => {
-        if (currentImageIndex !== targetImageIndex) {
-            const newDirection = targetImageIndex > currentImageIndex ? 1 : -1;
-            setDirection(newDirection);
-
-            // Calculate total number of steps needed
-            const totalSteps = Math.abs(targetImageIndex - currentImageIndex);
-            // Use a consistent transition time per image
-            const intervalTime = 700;
-
-            const interval = setInterval(() => {
-                setCurrentImageIndex((prev) => {
-                    const nextIndex = prev + newDirection;
-                    if (nextIndex === targetImageIndex) {
-                        clearInterval(interval);
-                    }
-                    return nextIndex;
-                });
-            }, intervalTime);
-
-            return () => clearInterval(interval);
-        }
+        // Determine direction based on current and target index
+        const newDirection = targetImageIndex > currentImageIndex ? 1 : -1;
+        setDirection(newDirection);
+        setCurrentImageIndex(targetImageIndex);
     }, [targetImageIndex]);
 
     return (
@@ -179,14 +164,14 @@ export default function Welcome_c() {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-4 text-[#1b1b18] lg:justify-center lg:p-4 dark:bg-[#0a0a0a]">
+            <div className="flex min-h-screen flex-col items-center bg-[#f1f1f1] p-4 text-[#1b1b18] lg:justify-center lg:p-4 dark:bg-[#0a0a0a]">
                 <header className="mb-2 w-full max-w-[1200px]">
                     <nav className="flex w-full items-center justify-between">
                         <div className="flex items-center">
                             <img
                                 src={WebsiteIcon}
                                 alt="Website Logo"
-                                className="h-[6vh] w-auto" // Adjust size as needed
+                                className="h-[6vh] w-auto"
                             />
                         </div>
                         {/* Navigation buttons on the far right */}
@@ -234,7 +219,7 @@ export default function Welcome_c() {
                 </header>
                 <div className="flex w-full flex-col items-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
                     {/* Horizontal Stepper */}
-                    <div className="sticky top-0 z-10 w-full max-w-[1200px] px-4 py-4 bg-[#FDFDFC] dark:bg-[#0a0a0a] shadow-sm">
+                    <div className="sticky top-0 z-10 w-full max-w-[1200px] px-4 py-4 bg-[#f1f1f1] dark:bg-[#0a0a0a] ">
                         <Box sx={{ width: '100%' }}>
                             <Stepper
                                 activeStep={activeStep}
@@ -294,39 +279,30 @@ export default function Welcome_c() {
                     </div>
 
                     {/* Image and Content Cards */}
-                    <main className="flex w-full max-w-[1200px] mt-5 flex-col md:items-center lg:items-stretch gap-2 lg:flex-row">
+                    <main className="flex gap-2 w-full max-w-[1200px] mt-5 flex-col md:items-center lg:items-stretch lg:w-[90vw] lg:h-[69vh] lg:flex-row">
                         {/* Image Card */}
-                        <Card className="w-full flex-1 h-full bg-[#E6E6E5] p-0 md:w-1/2 lg:w-2/3 dark:bg-[#121212]">
-                            <div className="relative w-full h-full overflow-hidden" style={{ maxHeight: '400px' }}>
-                                <AnimatePresence custom={direction}>
-                                    <motion.div
-                                        key={currentImageIndex}
-                                        custom={direction}
-                                        initial={{ y: direction * 300, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        exit={{ y: direction * -300, opacity: 0 }}
-                                        transition={{
-                                            type: 'spring',
-                                            stiffness: 100,
-                                            damping: 25,
-                                            mass: 1.2,
-                                        }}
-                                        className="flex items-center justify-center h-full"
-                                    >
-                                        <img
+                        <Card className="w-full flex-1 h-full bg-[#E6E6E5] p-0 md:w-1/2 lg:w-1/2 dark:bg-[#121212]">
+                            <div className="relative w-full h-full overflow-hidden">
+                                <div className="flex items-center justify-center w-full h-full">
+                                    <AnimatePresence mode="wait">
+                                        <motion.img
+                                            key={currentImageIndex}
                                             src={imageArray[currentImageIndex]}
                                             loading="lazy"
                                             alt={`${step} illustration`}
-                                            className="w-full rounded-lg object-contain"
-                                            style={{ maxHeight: '400px' }}
+                                            className="w-full h-full object-cover rounded-lg"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.2, ease: 'easeOut' }}
                                         />
-                                    </motion.div>
-                                </AnimatePresence>
+                                    </AnimatePresence>
+                                </div>
                             </div>
                         </Card>
 
                         {/* Content Card */}
-                        <Card className="w-full flex-1 flex flex-col bg-[#E6E6E5] p-6 md:w-1/2 lg:w-1/3 lg:h-[400px] dark:bg-[#121212]">
+                        <Card className="w-full flex-1 flex flex-col bg-[#cccccc] p-6 md:w-1/2 lg:w-1/2 lg:h-auto dark:bg-[#121212]">
                             <CardHeader className="p-0 pb-4">
                                 <CardTitle className="text-lg font-semibold">{currentStepContent.header}</CardTitle>
                             </CardHeader>
