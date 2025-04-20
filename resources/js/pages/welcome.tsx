@@ -12,43 +12,50 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Box, Step, StepContent, StepLabel, Stepper, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 type StepKey = 'First step' | 'Second step' | 'Third step' | 'Fourth step' | 'Fifth step' | 'Final step';
 type Status = 'not requested' | 'on hold' | 'done';
 
 interface StepContent {
     header: string;
+    subheader?: string;
     content: string;
 }
 
 const stepContentMap: Record<StepKey, StepContent> = {
     'First step': {
         header: 'Meet your builder and design your home',
-        content: 'This is where your journey begins!...',
+        subheader: 'This is where your journey begins!',
+        content: "You'll sit down with your builder to discuss your vision, needs, and budget. Bring any inspiration photos or ideas you have — this is the time to explore layouts, room count, and style preferences. You'll walk away with a clear plan and timeline. Get ready for your journey",
     },
     'Second step': {
         header: 'Plumbing Company',
+        subheader: "Let's get the water flowing",
         content:
-            "Let's get the water flowing — time to choose your sinks, tubs, faucets, and more! Whether you're after sleek modern vibes or cozy traditional touches, your plumbing choices will bring both function and flair to your new home. Bonus: water-saving options to go eco-friendly!\n\nYou've got two easy ways to choose:\n1- Visit our trusted plumbing company and explore options in person.\n2- Check out the curated plumbing packages uploaded to your account in our software — browse, compare, and pick what you love anytime!\n\nYour style, your pace, your home. Let's do this!",
+            "time to choose your sinks, tubs, faucets, and more! Whether you're after sleek modern vibes or cozy traditional touches, your plumbing Choices will bring both function and flair to your new home.\n\nYour style, your pace, your home. Let's do this!",
     },
     'Third step': {
-        header: 'Light Fixture Company (Set the Mood)',
+        header: 'Light Fixture Company',
+        subheader: 'Set the Mood',
         content:
-            "It's your time to shine! From statement chandeliers to soft, cozy lighting — this step helps you create the perfect ambiance in every room. Explore finishes, styles, and smart lighting options that match your personality and lifestyle. Let your home glow!\n\nYou have two great ways to choose:\n1- Visit our lighting company partner to see fixtures up close and get personalized guidance.\n2- Browse the pre-selected lighting packages we've uploaded to your account in our software, easy, convenient, and full of stylish options!\n\nLight it up your way!",
+            "From statement chandeliers to soft, cozy lighting, this step helps you create the perfect ambiance in every room. Explore finishes, styles, and smart lighting options that match your personality and lifestyle.\n\nLet your home glow!",
     },
     'Fourth step': {
-        header: 'Countertop Company – Style Meets Function',
+        header: 'Countertop Company',
+        subheader: 'Get ready to add that WOW factor',
         content:
-            "Ready to add that wow factor? It's time to meet with the countertop company and explore stunning materials like quartz, granite, or marble. Your consultant will guide you through the options, helping you match style with durability — so you get something beautiful and built to last. It's where everyday function meets standout design!",
+            "It's time to meet with the countertop company and explore stunning materials like quartz, granite, or marble. Your consultant will guide you through the options, helping you match style with durability, so you get something beautiful and built to last.\n\nIt's where everyday function meets standout design!",
     },
     'Fifth step': {
-        header: 'Cabinet Company – The Heart of Your Home',
+        header: 'Cabinet Company',
+        subheader: 'Time to get organized — beautifully!',
         content:
-            "Time to get organized — beautifully! You'll meet with the cabinet company to select your cabinet design, finish, color, and hardware. Together, you'll create a kitchen and bathroom that's both practical and picture-perfect. Whether you're going for classic charm or sleek minimalism, this is where the magic truly happens.",
+            "You'll meet with the cabinet company to select your cabinet design, finish, color, and hardware. Together, you'll create a kitchen and bathroom that's both practical and picture-perfect.\n\nWhether you're going for classic charm or sleek minimalism, this is where the magic truly happens.",
     },
     'Final step': {
-        header: 'Key Handed – Welcome Home!',
+        header: 'Key Handed',
+        subheader: 'Welcome Home!',
         content:
             "You made it! It's time to receive your keys and step into your brand new home. Enjoy a final walkthrough, get helpful info and documents, and celebrate the big moment. This is the start of your next chapter — welcome home!",
     },
@@ -98,25 +105,32 @@ export default function Welcome_c() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [direction, setDirection] = useState<1 | -1>(1);
     const [processing, setProcessing] = useState(false);
+    const [showSelfTooltip, setShowSelfTooltip] = useState(false);
+    const [showAssistedTooltip, setShowAssistedTooltip] = useState(false);
+    // Add state for mobile tooltips
+    const [showSelfMobileInfo, setShowSelfMobileInfo] = useState(false);
+    const [showAssistedMobileInfo, setShowAssistedMobileInfo] = useState(false);
+    const selfButtonRef = useRef<HTMLButtonElement>(null);
+    const assistedButtonRef = useRef<HTMLButtonElement>(null);
 
     const steps = [
         {
             label: 'Meet your builder and design your home',
         },
         {
-            label: 'Choose plumbing fixtures and features',
+            label: 'Plumbing Company ',
         },
         {
-            label: 'Select lighting fixtures and setup',
+            label: 'Light Fixture Company',
         },
         {
-            label: 'Pick countertop materials and design',
+            label: 'Countertop Company',
         },
         {
-            label: 'Design and choose cabinetry',
+            label: ' Cabinet Company ',
         },
         {
-            label: 'Receive keys and final walkthrough',
+            label: 'Key Handed – Welcome Home!',
         },
     ];
 
@@ -157,6 +171,17 @@ export default function Welcome_c() {
         setDirection(newDirection);
         setCurrentImageIndex(targetImageIndex);
     }, [targetImageIndex]);
+
+    // Add function to toggle mobile info
+    const toggleMobileInfo = (infoType: 'self' | 'assisted') => {
+        if (infoType === 'self') {
+            setShowSelfMobileInfo(!showSelfMobileInfo);
+            setShowAssistedMobileInfo(false); // Close the other info if open
+        } else {
+            setShowAssistedMobileInfo(!showAssistedMobileInfo);
+            setShowSelfMobileInfo(false); // Close the other info if open
+        }
+    };
 
     return (
         <>
@@ -305,6 +330,11 @@ export default function Welcome_c() {
                         <Card className="w-full flex-1 flex flex-col bg-[#cccccc] p-6 md:w-1/2 lg:w-1/2 lg:h-auto dark:bg-[#121212]">
                             <CardHeader className="p-0 pb-4">
                                 <CardTitle className="text-lg font-semibold">{currentStepContent.header}</CardTitle>
+                                {currentStepContent.subheader && (
+                                    <p className="text-base font-medium text-gray-700 mt-2 dark:text-gray-300">
+                                        {currentStepContent.subheader}
+                                    </p>
+                                )}
                             </CardHeader>
                             <div className="flex-1 overflow-y-auto">
                                 <div className="prose prose-sm dark:prose-invert max-w-none">
@@ -325,22 +355,101 @@ export default function Welcome_c() {
                                 user.stage === 6 ? null : (
                                     /* Normal case for other steps */
                                     <>
-                                        <div className="flex flex-wrap gap-2">
-                                            <Button
-                                                className={`min-w-[120px] ${status === 'on hold' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                                                disabled={status === 'on hold' || processing}
-                                                onClick={() => handleMoveToNextStage(user, 'self')}
-                                            >
-                                                {processing ? 'Processing...' : 'Do it yourself'}
-                                            </Button>
-                                            <Button
-                                                className={`min-w-[120px] ${status === 'on hold' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                                                disabled={status === 'on hold' || processing}
-                                                onClick={() => handleMoveToNextStage(user, 'assisted')}
-                                            >
-                                                {processing ? 'Processing...' : 'Let us handle it'}
-                                            </Button>
+                                        <div className="flex flex-wrap gap-2 relative">
+                                            <div className="relative">
+                                                <Button
+                                                    ref={selfButtonRef}
+                                                    className={`min-w-[120px] ${status === 'on hold' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                                    disabled={status === 'on hold' || processing}
+                                                    onClick={() => handleMoveToNextStage(user, 'self')}
+                                                    onMouseEnter={() => setShowSelfTooltip(true)}
+                                                    onMouseLeave={() => setShowSelfTooltip(false)}
+                                                >
+                                                    {processing ? 'Processing...' : 'Do it yourself'}
+                                                </Button>
+                                                {/* Info button for mobile */}
+                                                <button 
+                                                    className="md:hidden absolute right-[-30px] top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        toggleMobileInfo('self');
+                                                    }}
+                                                    aria-label="More information"
+                                                >
+                                                    <span className="text-xs font-bold">i</span>
+                                                </button>
+                                                {/* Desktop tooltip */}
+                                                {showSelfTooltip && (
+                                                    <div className="absolute bottom-full left-0 mb-2 w-64 rounded-md bg-white p-3 shadow-lg text-sm dark:bg-gray-800 z-50 hidden md:block">
+                                                        <div className="font-semibold mb-1">Visit Our Trusted Partner</div>
+                                                        <p className="text-gray-700 dark:text-gray-300">
+                                                            Schedule a visit to explore products in person and receive personalized, expert guidance tailored to your needs.
+                                                        </p>
+                                                        <div className="absolute -bottom-2 left-5 h-3 w-3 rotate-45 bg-white dark:bg-gray-800"></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Only show "Let us handle it" button for steps 2 and 3 */}
+                                            {(user.stage === 2 || user.stage === 2.5 || user.stage === 3 || user.stage === 3.5) && (
+                                                <div className="relative">
+                                                    <Button
+                                                        ref={assistedButtonRef}
+                                                        className={`min-w-[120px] ${status === 'on hold' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                                        disabled={status === 'on hold' || processing}
+                                                        onClick={() => handleMoveToNextStage(user, 'assisted')}
+                                                        onMouseEnter={() => setShowAssistedTooltip(true)}
+                                                        onMouseLeave={() => setShowAssistedTooltip(false)}
+                                                    >
+                                                        {processing ? 'Processing...' : 'Let us handle it'}
+                                                    </Button>
+                                                    {/* Info button for mobile */}
+                                                    <button 
+                                                        className="md:hidden absolute right-[-30px] top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            toggleMobileInfo('assisted');
+                                                        }}
+                                                        aria-label="More information"
+                                                    >
+                                                        <span className="text-xs font-bold">i</span>
+                                                    </button>
+                                                    {/* Desktop tooltip */}
+                                                    {showAssistedTooltip && (
+                                                        <div className="absolute bottom-full left-0 mb-2 w-64 rounded-md bg-white p-3 shadow-lg text-sm dark:bg-gray-800 z-50 hidden md:block">
+                                                            <div className="font-semibold mb-1">Select from Curated Options Online</div>
+                                                            <p className="text-gray-700 dark:text-gray-300">
+                                                                Access a collection of thoughtfully selected packages directly through your account—convenient, efficient, and tailored to your style.
+                                                            </p>
+                                                            <div className="absolute -bottom-2 left-5 h-3 w-3 rotate-45 bg-white dark:bg-gray-800"></div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
+
+                                        {/* Mobile information panels - combined into one panel */}
+                                        {(showSelfMobileInfo || showAssistedMobileInfo) && (
+                                            <div className="mt-4 p-3 bg-white rounded-md shadow-md text-sm dark:bg-gray-800 md:hidden">
+                                                {/* <div className="font-semibold mb-3">Your Options:</div> */}
+                                                
+                                                <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+                                                    <div className="font-semibold mb-1">Visit Our Trusted Partner ( Do it yourself )</div>
+                                                    <p className="text-gray-700 dark:text-gray-300">
+                                                        Schedule a visit to explore products in person and receive personalized, expert guidance tailored to your needs.
+                                                    </p>
+                                                </div>
+                                                
+                                                {(user.stage === 2 || user.stage === 2.5 || user.stage === 3 || user.stage === 3.5) && (
+                                                    <div>
+                                                        <div className="font-semibold mb-1">Select from Curated Options Online ( Let's handle it )</div>
+                                                        <p className="text-gray-700 dark:text-gray-300">
+                                                            Access a collection of thoughtfully selected packages directly through your account—convenient, efficient, and tailored to your style.
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                         <div className="mt-4 flex items-center gap-2">
                                             <span className="text-sm font-medium">Status:</span>
                                             <span
