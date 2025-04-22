@@ -1,18 +1,18 @@
-import WebsiteIcon from '@/assets/Group_1.svg';
+import WebsiteIcon from '@/assets/logo.png';
 import FirstPicForDesktop from '@/assets/d/d_1.png';
 import SecondPicForDesktop from '@/assets/d/d_2.png';
 import ThirdPicForDesktop from '@/assets/d/d_3.png';
 import FourthPicForDesktop from '@/assets/d/d_4.png';
 import FifthPicForDesktop from '@/assets/d/d_5.png';
-import FinalPicForDesktop from '@/assets/d/d_6.jpg'; 
+import FinalPicForDesktop from '@/assets/d/d_6.jpg';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { type SharedData, type User } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Box, Step, StepContent, StepLabel, Stepper, Typography } from '@mui/material';
+import { Box, Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type StepKey = 'First step' | 'Second step' | 'Third step' | 'Fourth step' | 'Fifth step' | 'Final step';
 type Status = 'not requested' | 'on hold' | 'done';
@@ -27,37 +27,38 @@ const stepContentMap: Record<StepKey, StepContent> = {
     'First step': {
         header: 'Meet your builder and design your home',
         subheader: 'This is where your journey begins!',
-        content: "You'll sit down with your builder to discuss your vision, needs, and budget. Bring any inspiration photos or ideas you have — this is the time to explore layouts, room count, and style preferences. You'll walk away with a clear plan and timeline. Get ready for your journey",
+        content:
+            "You'll sit down with your builder to discuss your vision, needs, and budget. Bring any inspiration photos or ideas you have — this is the time to explore layouts, room count, and style preferences. You'll walk away with a clear plan and timeline. Get ready for your journey 🚀",
     },
     'Second step': {
         header: 'Plumbing Company',
         subheader: "Let's get the water flowing",
         content:
-            "time to choose your sinks, tubs, faucets, and more! Whether you're after sleek modern vibes or cozy traditional touches, your plumbing Choices will bring both function and flair to your new home.\n\nYour style, your pace, your home. Let's do this!",
+            "time to choose your sinks, tubs, faucets, and more! Whether you're after sleek modern vibes or cozy traditional touches, your plumbing Choices will bring both function and flair to your new home.\n\nYour style, your pace, your home. Let's do this!💪",
     },
     'Third step': {
         header: 'Light Fixture Company',
         subheader: 'Set the Mood',
         content:
-            "From statement chandeliers to soft, cozy lighting, this step helps you create the perfect ambiance in every room. Explore finishes, styles, and smart lighting options that match your personality and lifestyle.\n\nLet your home glow!",
+            'From statement chandeliers to soft, cozy lighting, this step helps you create the perfect ambiance in every room. Explore finishes, styles, and smart lighting options that match your personality and lifestyle.\n\nLet your home glow!🌟',
     },
     'Fourth step': {
         header: 'Countertop Company',
         subheader: 'Get ready to add that WOW factor',
         content:
-            "It's time to meet with the countertop company and explore stunning materials like quartz, granite, or marble. Your consultant will guide you through the options, helping you match style with durability, so you get something beautiful and built to last.\n\nIt's where everyday function meets standout design!",
+            "It's time to meet with the countertop company and explore stunning materials like quartz, granite, or marble. Your consultant will guide you through the options, helping you match style with durability, so you get something beautiful and built to last.\n\nIt's where everyday function meets standout design!🏡🔨",
     },
     'Fifth step': {
         header: 'Cabinet Company',
-        subheader: 'Time to get organized — beautifully!',
+        subheader: 'Time to get organized — beautifully!🧁🛠️',
         content:
-            "You'll meet with the cabinet company to select your cabinet design, finish, color, and hardware. Together, you'll create a kitchen and bathroom that's both practical and picture-perfect.\n\nWhether you're going for classic charm or sleek minimalism, this is where the magic truly happens.",
+            "You'll meet with the cabinet company to select your cabinet design, finish, color, and hardware. Together, you'll create a kitchen and bathroom that's both practical and picture-perfect.\n\nWhether you're going for classic charm or sleek minimalism, this is where the magic truly happens.✨",
     },
     'Final step': {
         header: 'Key Handed',
         subheader: 'Welcome Home!',
         content:
-            "You made it! It's time to receive your keys and step into your brand new home. Enjoy a final walkthrough, get helpful info and documents, and celebrate the big moment. This is the start of your next chapter — welcome home!",
+            "You made it!🎉🏡 It's time to receive your keys and step into your brand new home. Enjoy a final walkthrough, get helpful info and documents, and celebrate the big moment. This is the start of your next chapter — welcome home!🥂🔑",
     },
 };
 
@@ -193,11 +194,7 @@ export default function Welcome_c() {
                 <header className="mb-2 w-full max-w-[1200px]">
                     <nav className="flex w-full items-center justify-between">
                         <div className="flex items-center">
-                            <img
-                                src={WebsiteIcon}
-                                alt="Website Logo"
-                                className="h-[6vh] w-auto"
-                            />
+                            <img src={WebsiteIcon} alt="Website Logo" className="h-[6vh] w-auto" />
                         </div>
                         {/* Navigation buttons on the far right */}
                         <div className="flex gap-4">
@@ -244,7 +241,7 @@ export default function Welcome_c() {
                 </header>
                 <div className="flex w-full flex-col items-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
                     {/* Horizontal Stepper */}
-                    <div className="sticky top-0 z-10 w-full max-w-[1200px] px-4 py-4 bg-[#f1f1f1] dark:bg-[#0a0a0a] ">
+                    <div className="sticky top-0 z-10 w-full max-w-[1200px] bg-[#f1f1f1] px-4 py-4 dark:bg-[#0a0a0a]">
                         <Box sx={{ width: '100%' }}>
                             <Stepper
                                 activeStep={activeStep}
@@ -304,18 +301,18 @@ export default function Welcome_c() {
                     </div>
 
                     {/* Image and Content Cards */}
-                    <main className="flex gap-2 w-full max-w-[1200px] mt-5 flex-col md:items-center lg:items-stretch lg:w-[90vw] lg:h-[69vh] lg:flex-row">
+                    <main className="mt-5 flex w-full max-w-[1200px] flex-col gap-2 md:items-center lg:h-[69vh] lg:w-[90vw] lg:flex-row lg:items-stretch">
                         {/* Image Card */}
-                        <Card className="w-full flex-1 h-full bg-[#E6E6E5] p-0 md:w-1/2 lg:w-1/2 dark:bg-[#121212]">
-                            <div className="relative w-full h-full overflow-hidden">
-                                <div className="flex items-center justify-center w-full h-full">
+                        <Card className="h-full w-full flex-1 bg-[#E6E6E5] p-0 md:w-1/2 lg:w-1/2 dark:bg-[#121212]">
+                            <div className="relative h-full w-full overflow-hidden">
+                                <div className="flex h-full w-full items-center justify-center">
                                     <AnimatePresence mode="wait">
                                         <motion.img
                                             key={currentImageIndex}
                                             src={imageArray[currentImageIndex]}
                                             loading="lazy"
                                             alt={`${step} illustration`}
-                                            className="w-full h-full object-cover rounded-lg"
+                                            className="h-full w-full rounded-lg object-cover"
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
@@ -327,13 +324,11 @@ export default function Welcome_c() {
                         </Card>
 
                         {/* Content Card */}
-                        <Card className="w-full flex-1 flex flex-col bg-[#cccccc] p-6 md:w-1/2 lg:w-1/2 lg:h-auto dark:bg-[#121212]">
+                        <Card className="flex w-full flex-1 flex-col bg-[#cccccc] p-6 md:w-1/2 lg:h-auto lg:w-1/2 dark:bg-[#121212]">
                             <CardHeader className="p-0 pb-4">
                                 <CardTitle className="text-lg font-semibold">{currentStepContent.header}</CardTitle>
                                 {currentStepContent.subheader && (
-                                    <p className="text-base font-medium text-gray-700 mt-2 dark:text-gray-300">
-                                        {currentStepContent.subheader}
-                                    </p>
+                                    <p className="mt-2 text-base font-medium text-gray-700 dark:text-gray-300">{currentStepContent.subheader}</p>
                                 )}
                             </CardHeader>
                             <div className="flex-1 overflow-y-auto">
@@ -355,7 +350,7 @@ export default function Welcome_c() {
                                 user.stage === 6 ? null : (
                                     /* Normal case for other steps */
                                     <>
-                                        <div className="flex flex-wrap gap-2 relative">
+                                        <div className="relative flex flex-wrap gap-2">
                                             <div className="relative">
                                                 <Button
                                                     ref={selfButtonRef}
@@ -368,28 +363,20 @@ export default function Welcome_c() {
                                                     {processing ? 'Processing...' : 'Do it yourself'}
                                                 </Button>
                                                 {/* Info button for mobile */}
-                                                <button 
-                                                    className="md:hidden absolute right-[-30px] top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        toggleMobileInfo('self');
-                                                    }}
-                                                    aria-label="More information"
-                                                >
-                                                    <span className="text-xs font-bold">i</span>
-                                                </button>
+
                                                 {/* Desktop tooltip */}
                                                 {showSelfTooltip && (
-                                                    <div className="absolute bottom-full left-0 mb-2 w-64 rounded-md bg-white p-3 shadow-lg text-sm dark:bg-gray-800 z-50 hidden md:block">
-                                                        <div className="font-semibold mb-1">Visit Our Trusted Partner</div>
+                                                    <div className="absolute bottom-full left-0 z-50 mb-2 hidden w-64 rounded-md bg-white p-3 text-sm shadow-lg md:block dark:bg-gray-800">
+                                                        <div className="mb-1 font-semibold">Visit Our Trusted Partner</div>
                                                         <p className="text-gray-700 dark:text-gray-300">
-                                                            Schedule a visit to explore products in person and receive personalized, expert guidance tailored to your needs.
+                                                            Schedule a visit to explore products in person and receive personalized, expert guidance
+                                                            tailored to your needs.
                                                         </p>
                                                         <div className="absolute -bottom-2 left-5 h-3 w-3 rotate-45 bg-white dark:bg-gray-800"></div>
                                                     </div>
                                                 )}
                                             </div>
-                                            
+
                                             {/* Only show "Let us handle it" button for steps 2 and 3 */}
                                             {(user.stage === 2 || user.stage === 2.5 || user.stage === 3 || user.stage === 3.5) && (
                                                 <div className="relative">
@@ -404,8 +391,8 @@ export default function Welcome_c() {
                                                         {processing ? 'Processing...' : 'Let us handle it'}
                                                     </Button>
                                                     {/* Info button for mobile */}
-                                                    <button 
-                                                        className="md:hidden absolute right-[-30px] top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                                                    <button
+                                                        className="absolute top-1/2 right-[-30px] flex h-6 w-6 -translate-y-1/2 transform items-center justify-center rounded-full bg-gray-200 text-gray-700 md:hidden dark:bg-gray-700 dark:text-gray-300"
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             toggleMobileInfo('assisted');
@@ -416,10 +403,11 @@ export default function Welcome_c() {
                                                     </button>
                                                     {/* Desktop tooltip */}
                                                     {showAssistedTooltip && (
-                                                        <div className="absolute bottom-full left-0 mb-2 w-64 rounded-md bg-white p-3 shadow-lg text-sm dark:bg-gray-800 z-50 hidden md:block">
-                                                            <div className="font-semibold mb-1">Select from Curated Options Online</div>
+                                                        <div className="absolute bottom-full left-0 z-50 mb-2 hidden w-64 rounded-md bg-white p-3 text-sm shadow-lg md:block dark:bg-gray-800">
+                                                            <div className="mb-1 font-semibold">Select from Curated Options Online</div>
                                                             <p className="text-gray-700 dark:text-gray-300">
-                                                                Access a collection of thoughtfully selected packages directly through your account—convenient, efficient, and tailored to your style.
+                                                                Access a collection of thoughtfully selected packages directly through your
+                                                                account—convenient, efficient, and tailored to your style.
                                                             </p>
                                                             <div className="absolute -bottom-2 left-5 h-3 w-3 rotate-45 bg-white dark:bg-gray-800"></div>
                                                         </div>
@@ -430,21 +418,23 @@ export default function Welcome_c() {
 
                                         {/* Mobile information panels - combined into one panel */}
                                         {(showSelfMobileInfo || showAssistedMobileInfo) && (
-                                            <div className="mt-4 p-3 bg-white rounded-md shadow-md text-sm dark:bg-gray-800 md:hidden">
-                                                {/* <div className="font-semibold mb-3">Your Options:</div> */}
-                                                
-                                                <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-                                                    <div className="font-semibold mb-1">Visit Our Trusted Partner ( Do it yourself )</div>
+                                            <div className="mt-4 rounded-md bg-white p-3 text-sm shadow-md md:hidden dark:bg-gray-800">
+                                                <div className="mb-3 border-b border-gray-200 pb-3 dark:border-gray-700">
+                                                    <div className="mb-1 font-semibold">Visit Our Trusted Partner ( Do it yourself )</div>
                                                     <p className="text-gray-700 dark:text-gray-300">
-                                                        Schedule a visit to explore products in person and receive personalized, expert guidance tailored to your needs.
+                                                        Schedule a visit to explore products in person and receive personalized, expert guidance
+                                                        tailored to your needs.
                                                     </p>
                                                 </div>
-                                                
+
                                                 {(user.stage === 2 || user.stage === 2.5 || user.stage === 3 || user.stage === 3.5) && (
                                                     <div>
-                                                        <div className="font-semibold mb-1">Select from Curated Options Online ( Let's handle it )</div>
+                                                        <div className="mb-1 font-semibold">
+                                                            Select from Curated Options Online ( Let's handle it )
+                                                        </div>
                                                         <p className="text-gray-700 dark:text-gray-300">
-                                                            Access a collection of thoughtfully selected packages directly through your account—convenient, efficient, and tailored to your style.
+                                                            Access a collection of thoughtfully selected packages directly through your
+                                                            account—convenient, efficient, and tailored to your style.
                                                         </p>
                                                     </div>
                                                 )}

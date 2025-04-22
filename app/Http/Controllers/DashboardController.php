@@ -118,12 +118,8 @@ class DashboardController extends Controller
                 'stage' => $stageProgression[$currentIndex + 1]
             ]);
         }
-        
-        if ($user && $user->stage == 0) {
             return redirect()->intended(route('dashboard', absolute: false));
-        } else {
-            return redirect()->route('home');
-        }
+
     }
     
     /**
