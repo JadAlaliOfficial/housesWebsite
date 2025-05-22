@@ -107,7 +107,7 @@ class DashboardController extends Controller
         $currentStage = (float) $user->stage;
         
         // Define the progression of stages
-        $stageProgression = [0, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6];
+        $stageProgression = [0, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6,6.5 , 7];
         
         // Find the current index
         $currentIndex = array_search($currentStage, $stageProgression);
