@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Add a decimal column with 10 digits in total, 2 after the decimal point
-            // Default value is 0.00
-            $table->decimal('stage', 10, 2)->default(1.00);
+            $table->string('status')->nullable();
         });
     }
 

@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WelcomeCController;
-
+use App\Http\Controllers\StageController;
+use App\Http\Controllers\TemporaryLinkController;
+use App\Http\Middleware\HandleInertiaRequests;
 
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -13,12 +15,28 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/users', [DashboardController::class, 'store'])->name('users.store');
     Route::put('/users/{id}', [DashboardController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [DashboardController::class, 'destroy'])->name('users.destroy');
+    Route::resource('stages', StageController::class);
+    Route::post('/users/{id}/handle-button', [DashboardController::class, 'handleButtonClick'])->name('users.handleButtonClick');
 });
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
+// Generate temp link
+Route::post('/temporary/reset-link', [TemporaryLinkController::class, 'generateResetLink'])
+    ->name('temporary.reset-link');
 
+// Handle signed link
+Route::get('/temporary/forgot-password', [TemporaryLinkController::class, 'showResetForm'])
+    ->name('password.request.temp');
+
+// Generate temp registration link (JSON)
+Route::post('/temporary/register-link', [TemporaryLinkController::class, 'generateRegisterLink'])
+    ->name('temporary.register-link');
+
+// Show registration form via signed URL
+Route::get('/temporary/register', [TemporaryLinkController::class, 'showRegisterForm'])
+    ->name('register.temp');
 //tests
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeCController::class, 'index'])->name('home');

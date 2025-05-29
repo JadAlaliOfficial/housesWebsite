@@ -1,572 +1,396 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type User } from '@/types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Head, router } from '@inertiajs/react';
-import { ArrowRight, ArrowRightCircle, Edit, Plus, Trash, Users } from 'lucide-react';
-import { useState } from 'react';
-import { useForm as useHookForm } from 'react-hook-form';
-import * as z from 'zod';
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import AppLayout from '@/layouts/app-layout'
+import { type BreadcrumbItem, type User } from '@/types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Head, router } from '@inertiajs/react'
+import { ArrowRight, ArrowRightCircle, Edit, Link2, Link as LinkIcon, Plus, Trash, Users } from 'lucide-react'
+import { useState } from 'react'
+import { useForm as useHookForm } from 'react-hook-form'
+import * as z from 'zod'
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }]
 
-// Helper function to get stage name from stage value
-const getStageNameFromValue = (stageValue: number | string): string => {
-    // Ensure we're working with a number
-    const numericValue = typeof stageValue === 'string' ? parseFloat(stageValue) : stageValue;
+interface Stage { id: number; name: string; order: number }
+interface DashboardProps { users: User[]; stages: Stage[] }
 
-    // Convert to string with fixed precision to handle floating point comparison issues
-    const stageValueStr = numericValue.toFixed(1);
+const userFormSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  password: z.string().min(8, { message: 'Password must be at least 8 characters.' }).optional(),
+  stage: z.coerce.number().min(0, { message: 'Stage is required.' }),
+})
 
-    const stageMap: Record<string, string> = {
-        '0.0': 'Admin',
-        '1.0': 'Meet Builder & Design Home',
-        '2.0': 'Plumbing Company',
-        '2.5': 'Plumbing - Awaiting Approval',
-        '3.0': 'Light Fixture Company',
-        '3.5': 'Light Fixture - Awaiting Approval',
-        '4.0': 'Countertop Company',
-        '4.5': 'Countertop - Awaiting Approval',
-        '5.0': 'Cabinet Company',
-        '5.5': 'Cabinet - Awaiting Approval',
-        '6.0': 'Flooring & Tile',
-        '6.5': 'Flooring & Tile - Awaiting Approval',
-        '7.0': 'Key Handed',
-    };
-
-    return stageMap[stageValueStr] || `Unknown Stage (${numericValue})`;
-};
-
-interface DashboardProps {
-    users: User[];
+const getStageNameFromValue = (stageId: number | string, stages: Stage[]) => {
+  const id = typeof stageId === 'string' ? parseFloat(stageId) : stageId
+  const stage = stages.find((s) => s.order === id)
+  return stage ? `${stage.order}. ${stage.name}` : `Unknown Stage (${id})`
 }
 
-// Form schema for user creation and editing
-const userFormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-    email: z.string().email({ message: 'Please enter a valid email address.' }),
-    password: z.string().min(8, { message: 'Password must be at least 8 characters.' }).optional(),
-    stage: z.coerce.number().min(0, { message: 'Stage must be a positive number or zero.' }),
-});
+// helper to read a cookie by name
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(^|;\\s*)' + name + '=([^;]*)'))
+  return match ? decodeURIComponent(match[2]) : null
+}
 
-export default function Dashboard({ users }: DashboardProps) {
-    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [isMoveToStageDialogOpen, setIsMoveToStageDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+export default function Dashboard({ users, stages }: DashboardProps) {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isMoveToStageDialogOpen, setIsMoveToStageDialogOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
-    // Create user form
-    const createForm = useHookForm<z.infer<typeof userFormSchema>>({
-        resolver: zodResolver(userFormSchema),
-        defaultValues: {
-            name: '',
-            email: '',
-            password: '',
-            stage: 1.0, // Updated to explicitly use decimal
-        },
-    });
+  // notification states for each button
+  const [resetNotification, setResetNotification] = useState<{ message: string; isError?: boolean } | null>(null)
+  const [regNotification,   setRegNotification]   = useState<{ message: string; isError?: boolean } | null>(null)
 
-    // Edit user form
-    const editForm = useHookForm<z.infer<typeof userFormSchema>>({
-        resolver: zodResolver(
-            userFormSchema.extend({
-                password: z.string().min(8, { message: 'Password must be at least 8 characters.' }).optional().or(z.literal('')),
-            }),
-        ),
-        defaultValues: {
-            name: '',
-            email: '',
-            password: '',
-            stage: 1.0, // Updated to explicitly use decimal
-        },
-    });
+  const createForm = useHookForm<z.infer<typeof userFormSchema>>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: { name: '', email: '', password: '', stage: stages[0]?.order ?? 0 },
+  })
+  const editForm = useHookForm<z.infer<typeof userFormSchema>>({
+    resolver: zodResolver(
+      userFormSchema.extend({ password: z.string().min(8).optional().or(z.literal('')) })
+    ),
+    defaultValues: { name: '', email: '', password: '', stage: stages[0]?.order ?? 0 },
+  })
+  const moveToStageForm = useHookForm<{ stage: number }>({
+    resolver: zodResolver(z.object({ stage: z.coerce.number().min(0) })),
+    defaultValues: { stage: stages[0]?.order ?? 0 },
+  })
 
-    // Handle create user
-    const onCreateSubmit = (data: z.infer<typeof userFormSchema>) => {
-        router.post(route('users.store'), data, {
-            onSuccess: () => {
-                setIsCreateDialogOpen(false);
-                createForm.reset();
-            },
-        });
-    };
+  const onCreateSubmit = (data: z.infer<typeof userFormSchema>) =>
+    router.post(route('users.store'), data, {
+      onSuccess: () => {
+        setIsCreateDialogOpen(false)
+        createForm.reset()
+      },
+    })
+  const onEditSubmit = (data: z.infer<typeof userFormSchema>) => {
+    if (!selectedUser) return
+    router.put(route('users.update', selectedUser.id), data, {
+      onSuccess: () => {
+        setIsEditDialogOpen(false)
+        editForm.reset()
+      },
+    })
+  }
+  const onDeleteConfirm = () => {
+    if (!selectedUser) return
+    router.delete(route('users.destroy', selectedUser.id), {
+      onSuccess: () => setIsDeleteDialogOpen(false),
+    })
+  }
+  const onMoveToStageSubmit = (data: { stage: number }) => {
+    if (!selectedUser) return
+    router.post(route('users.moveToStage', selectedUser.id), data, {
+      onSuccess: () => {
+        setIsMoveToStageDialogOpen(false)
+        moveToStageForm.reset()
+      },
+      preserveScroll: true,
+    })
+  }
 
-    // Handle edit user
-    const onEditSubmit = (data: z.infer<typeof userFormSchema>) => {
-        if (selectedUser) {
-            router.put(route('users.update', selectedUser.id), data, {
-                onSuccess: () => {
-                    setIsEditDialogOpen(false);
-                    editForm.reset();
-                },
-            });
+  const handleEditClick = (user: User) => {
+    setSelectedUser(user)
+    editForm.reset({
+      name: user.name,
+      email: user.email,
+      password: '',
+      stage: typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage,
+    })
+    setIsEditDialogOpen(true)
+  }
+  const handleDeleteClick = (user: User) => {
+    setSelectedUser(user)
+    setIsDeleteDialogOpen(true)
+  }
+  const handleMoveToNextStage = (user: User) =>
+    router.post(route('users.moveToNextStage', user.id), {}, { preserveScroll: true })
+  const handleMoveToStageClick = (user: User) => {
+    setSelectedUser(user)
+    moveToStageForm.reset({
+      stage: typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage,
+    })
+    setIsMoveToStageDialogOpen(true)
+  }
+  const renderStageSelectItems = () =>
+    stages.map((stage) => (
+      <SelectItem key={stage.id} value={stage.order.toString()}>
+        {`${stage.order}. ${stage.name}`}
+      </SelectItem>
+    ))
+
+    const makeTempLink = async (
+      routeName: string,
+      onNotify: React.Dispatch<React.SetStateAction<{ message: string; isError?: boolean } | null>>
+    ) => {
+      try {
+        const csrfMeta = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content
+        const xsrfCookie = getCookie('XSRF-TOKEN')
+        const headers: Record<string,string> = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         }
-    };
-
-    // Handle delete user
-    const onDeleteConfirm = () => {
-        if (selectedUser) {
-            router.delete(route('users.destroy', selectedUser.id), {
-                onSuccess: () => {
-                    setIsDeleteDialogOpen(false);
-                },
-            });
+        if (csrfMeta)   headers['X-CSRF-TOKEN'] = csrfMeta
+        if (xsrfCookie) headers['X-XSRF-TOKEN'] = xsrfCookie
+  
+        const res = await fetch(route(routeName), {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({}),
+          credentials: 'same-origin',
+        })
+        if (!res.ok) {
+          const text = await res.text()
+          throw new Error(`${res.status} ${res.statusText}\n\n${text}`)
         }
-    };
+        const data = await res.json()
+        const url = (data as any).url ?? (data as any).props?.url
+        if (!url) throw new Error('no `url` field in response')
+        await navigator.clipboard.writeText(url)
+        onNotify({ message: 'Link copied!', isError: false })
+      } catch (err) {
+        console.error(err)
+        onNotify({ message: 'Failed to copy link.', isError: true })
+      } finally {
+        setTimeout(() => onNotify(null), 3000)
+      }
+    }
+  
+    const handleGenerateResetLink = () =>
+      makeTempLink('temporary.reset-link', setResetNotification)
+    const handleGenerateRegisterLink = () =>
+      makeTempLink('temporary.register-link', setRegNotification)
+  // ————————————————————————————————————————————————
 
-    // Open edit dialog and populate form
-    const handleEditClick = (user: User) => {
-        setSelectedUser(user);
-        // Ensure stage is properly converted to a number
-        const stageValue = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
-
-        editForm.reset({
-            name: user.name,
-            email: user.email,
-            password: '',
-            stage: stageValue,
-        });
-        setIsEditDialogOpen(true);
-    };
-
-    // Open delete dialog
-    const handleDeleteClick = (user: User) => {
-        setSelectedUser(user);
-        setIsDeleteDialogOpen(true);
-    };
-
-    // Add a new form for moving to a specific stage
-    const moveToStageForm = useHookForm<{ stage: number }>({
-        resolver: zodResolver(
-            z.object({
-                stage: z.coerce.number().min(0, { message: 'Stage must be a positive number or zero.' }),
-            }),
-        ),
-        defaultValues: {
-            stage: 1.0,
-        },
-    });
-
-    // Handle move to next stage
-    const handleMoveToNextStage = (user: User) => {
-        router.post(
-            route('users.moveToNextStage', user.id),
-            {},
-            {
-                preserveScroll: true,
-            },
-        );
-    };
-
-    // Handle move to specific stage
-    const onMoveToStageSubmit = (data: { stage: number }) => {
-        if (selectedUser) {
-            router.post(route('users.moveToStage', selectedUser.id), data, {
-                onSuccess: () => {
-                    setIsMoveToStageDialogOpen(false);
-                    moveToStageForm.reset();
-                },
-                preserveScroll: true,
-            });
-        }
-    };
-
-    // Open move to stage dialog
-    const handleMoveToStageClick = (user: User) => {
-        setSelectedUser(user);
-        // Set current stage as default
-        const stageValue = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
-        moveToStageForm.reset({
-            stage: stageValue,
-        });
-        setIsMoveToStageDialogOpen(true);
-    };
-
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 bg-[#E6E6E6] p-4 text-[#0a0a0a] dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">
-                <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212]">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <div>
-                            <CardTitle className="text-xl font-bold">Users Management</CardTitle>
-                            <CardDescription className="dark:text-gray-300">Manage all users and their stages</CardDescription>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
-                                    >
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add User
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px] dark:border-[#3E3E3A] dark:bg-[#121212]">
-                                    <DialogHeader>
-                                        <DialogTitle>Create New User</DialogTitle>
-                                        <DialogDescription className="dark:text-gray-300">
-                                            Add a new user to the system. Click save when you're done.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <Form {...createForm}>
-                                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                                            <FormField
-                                                control={createForm.control}
-                                                name="name"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="dark:text-[#E6E6E6]">Name</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="John Doe"
-                                                                {...field}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={createForm.control}
-                                                name="email"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="dark:text-[#E6E6E6]">Email</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="email"
-                                                                placeholder="john@example.com"
-                                                                {...field}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={createForm.control}
-                                                name="password"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="dark:text-[#E6E6E6]">Password</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="password"
-                                                                placeholder="********"
-                                                                {...field}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={createForm.control}
-                                                name="stage"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="dark:text-[#E6E6E6]">Stage</FormLabel>
-                                                        <Select
-                                                            onValueChange={(value) => field.onChange(parseFloat(value))}
-                                                            defaultValue={field.value.toString()}
-                                                        >
-                                                            <FormControl>
-                                                                <SelectTrigger className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]">
-                                                                    <SelectValue placeholder="Select a stage" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]">
-                                                                <SelectItem value="0">Admin </SelectItem>
-                                                                <SelectItem value="1">Meet Builder & Design Home </SelectItem>
-                                                                <SelectItem value="2">Plumbing Company </SelectItem>
-                                                                <SelectItem value="2.5">Plumbing - Awaiting Approval </SelectItem>
-                                                                <SelectItem value="3">Light Fixture Company </SelectItem>
-                                                                <SelectItem value="3.5">Light Fixture - Awaiting Approval </SelectItem>
-                                                                <SelectItem value="4">Countertop Company </SelectItem>
-                                                                <SelectItem value="4.5">Countertop - Awaiting Approval </SelectItem>
-                                                                <SelectItem value="5">Cabinet Company</SelectItem>
-                                                                <SelectItem value="5.5">Cabinet - Awaiting Approval </SelectItem>
-                                                                <SelectItem value="6">Flooring & Tile</SelectItem>
-                                                                <SelectItem value="6.5">Flooring & Tile - Awaiting Approval</SelectItem>
-                                                                <SelectItem value="7">Key Handed </SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <DialogFooter>
-                                                <Button type="submit" className="dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]">
-                                                    Save User
-                                                </Button>
-                                            </DialogFooter>
-                                        </form>
-                                    </Form>
-                                </DialogContent>
-                            </Dialog>
-                            <Users className="text-muted-foreground h-6 w-6" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="dark:border-[#3E3E3A]">
-                                    <TableHead className="dark:text-[#E6E6E6]">ID</TableHead>
-                                    <TableHead className="dark:text-[#E6E6E6]">Name</TableHead>
-                                    <TableHead className="dark:text-[#E6E6E6]">Email</TableHead>
-                                    <TableHead className="dark:text-[#E6E6E6]">Stage</TableHead>
-                                    <TableHead className="dark:text-[#E6E6E6]">Created At</TableHead>
-                                    <TableHead className="text-right dark:text-[#E6E6E6]">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.map((user) => (
-                                    <TableRow key={user.id} className="dark:border-[#3E3E3A]">
-                                        <TableCell className="dark:text-[#E6E6E6]">{user.id}</TableCell>
-                                        <TableCell className="dark:text-[#E6E6E6]">{user.name}</TableCell>
-                                        <TableCell className="dark:text-[#E6E6E6]">{user.email}</TableCell>
-                                        <TableCell className="dark:text-[#E6E6E6]">{getStageNameFromValue(user.stage)}</TableCell>
-                                        <TableCell className="dark:text-[#E6E6E6]">{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleMoveToNextStage(user)}
-                                                className="mr-1 dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]"
-                                                title="Move to Next Stage"
-                                            >
-                                                <ArrowRightCircle className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleMoveToStageClick(user)}
-                                                className="mr-1 dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]"
-                                                title="Move to Specific Stage"
-                                            >
-                                                <ArrowRight className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleEditClick(user)}
-                                                className="mr-1 dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]"
-                                                title="Edit User"
-                                            >
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleDeleteClick(user)}
-                                                className="dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]"
-                                                title="Delete User"
-                                            >
-                                                <Trash className="h-4 w-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
+  return (
+    <AppLayout breadcrumbs={breadcrumbs}>
+      <Head title="Dashboard" />
+      <div className="p-4">
+        <Card className="bg-white dark:bg-[#121212] dark:border-[#3E3E3A]">
+          <CardHeader className="flex justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold">Users Management</CardTitle>
+              <CardDescription className="dark:text-gray-300">
+                Manage all users and their stages
+              </CardDescription>
             </div>
-
-            {/* Edit User Dialog */}
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] dark:border-[#3E3E3A] dark:bg-[#121212]">
-                    <DialogHeader>
-                        <DialogTitle>Edit User</DialogTitle>
-                        <DialogDescription className="dark:text-gray-300">
-                            Update user information. Leave password blank to keep current password.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Form {...editForm}>
-                        <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-                            <FormField
-                                control={editForm.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#E6E6E6]">Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="John Doe"
-                                                {...field}
-                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={editForm.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#E6E6E6]">Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="email"
-                                                placeholder="john@example.com"
-                                                {...field}
-                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={editForm.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#E6E6E6]">Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                placeholder="Leave blank to keep current password"
-                                                {...field}
-                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={editForm.control}
-                                name="stage"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#E6E6E6]">Stage</FormLabel>
-                                        <Select onValueChange={(value) => field.onChange(parseFloat(value))} defaultValue={field.value.toString()}>
-                                            <FormControl>
-                                                <SelectTrigger className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]">
-                                                    <SelectValue placeholder="Select a stage" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]">
-                                                <SelectItem value="0">Admin</SelectItem>
-                                                <SelectItem value="1">Meet Builder & Design Home</SelectItem>
-                                                <SelectItem value="2">Plumbing Company</SelectItem>
-                                                <SelectItem value="2.5">Plumbing - Awaiting Approval</SelectItem>
-                                                <SelectItem value="3">Light Fixture Company</SelectItem>
-                                                <SelectItem value="3.5">Light Fixture - Awaiting Approval</SelectItem>
-                                                <SelectItem value="4">Countertop Company</SelectItem>
-                                                <SelectItem value="4.5">Countertop - Awaiting Approval</SelectItem>
-                                                <SelectItem value="5">Cabinet Company</SelectItem>
-                                                <SelectItem value="5.5">Cabinet - Awaiting Approval</SelectItem>
-                                                <SelectItem value="6">Flooring & Tile</SelectItem>
-                                                <SelectItem value="6.5">Flooring & Tile - Awaiting Approval</SelectItem>
-                                                <SelectItem value="7">Key Handed</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <Button type="submit" className="dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]">
-                                    Save Changes
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
+            <div className="flex items-center gap-2">
+              {/* Add User */}
+              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Plus className="mr-2 h-4 w-4" /> Add User
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create New User</DialogTitle>
+                  </DialogHeader>
+                  <Form {...createForm}>
+                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                      {/* name, email, password, stage fields… */}
+                      <DialogFooter>
+                        <Button type="submit">Save</Button>
+                      </DialogFooter>
+                    </form>
+                  </Form>
                 </DialogContent>
-            </Dialog>
+              </Dialog>
 
-            {/* Delete User Dialog */}
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] dark:border-[#3E3E3A] dark:bg-[#121212]">
-                    <DialogHeader>
-                        <DialogTitle>Delete User</DialogTitle>
-                        <DialogDescription className="dark:text-gray-300">
-                            Are you sure you want to delete this user? This action cannot be undone.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} className="dark:border-[#3E3E3A] dark:text-[#E6E6E6]">
-                            Cancel
-                        </Button>
-                        <Button variant="destructive" onClick={onDeleteConfirm}>
-                            Delete
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+              {/* Temp Reset Link */}
+              <div className="flex flex-col items-start">
+                <Button variant="outline" size="sm" onClick={handleGenerateResetLink}>
+                  <Link2 className="mr-2 h-4 w-4" /> Temp Reset Link
+                </Button>
+                {resetNotification && (
+                  <span
+                    className={`mt-1 text-sm ${
+                      resetNotification.isError ? 'text-red-500' : 'text-green-500'
+                    }`}
+                  >
+                    {resetNotification.message}
+                  </span>
+                )}
+              </div>
 
-            {/* Move to Stage Dialog */}
-            <Dialog open={isMoveToStageDialogOpen} onOpenChange={setIsMoveToStageDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] dark:border-[#3E3E3A] dark:bg-[#121212]">
-                    <DialogHeader>
-                        <DialogTitle>Move to Stage</DialogTitle>
-                        <DialogDescription className="dark:text-gray-300">Select a stage to move the user to.</DialogDescription>
-                    </DialogHeader>
-                    <Form {...moveToStageForm}>
-                        <form onSubmit={moveToStageForm.handleSubmit(onMoveToStageSubmit)} className="space-y-4">
-                            <FormField
-                                control={moveToStageForm.control}
-                                name="stage"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#E6E6E6]">Stage</FormLabel>
-                                        <Select onValueChange={(value) => field.onChange(parseFloat(value))} defaultValue={field.value.toString()}>
-                                            <FormControl>
-                                                <SelectTrigger className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]">
-                                                    <SelectValue placeholder="Select a stage" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]">
-                                                <SelectItem value="0">Admin</SelectItem>
-                                                <SelectItem value="1">Meet Builder & Design Home</SelectItem>
-                                                <SelectItem value="2">Plumbing Company</SelectItem>
-                                                <SelectItem value="2.5">Plumbing - Awaiting Approval</SelectItem>
-                                                <SelectItem value="3">Light Fixture Company</SelectItem>
-                                                <SelectItem value="3.5">Light Fixture - Awaiting Approval</SelectItem>
-                                                <SelectItem value="4">Countertop Company</SelectItem>
-                                                <SelectItem value="4.5">Countertop - Awaiting Approval</SelectItem>
-                                                <SelectItem value="5">Cabinet Company</SelectItem>
-                                                <SelectItem value="5.5">Cabinet - Awaiting Approval</SelectItem>
-                                                <SelectItem value="6">Flooring & Tile</SelectItem>
-                                                <SelectItem value="6.5">Flooring & Tile - Awaiting Approval</SelectItem>
-                                                <SelectItem value="7">Key Handed</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <Button type="submit" className="dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:hover:bg-[#2a2a2a]">
-                                    Move
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
-        </AppLayout>
-    );
+              {/* Temp Register Link */}
+              <div className="flex flex-col items-start">
+                <Button variant="outline" size="sm" onClick={handleGenerateRegisterLink}>
+                  <LinkIcon className="mr-2 h-4 w-4" /> Temp Register Link
+                </Button>
+                {regNotification && (
+                  <span
+                    className={`mt-1 text-sm ${
+                      regNotification.isError ? 'text-red-500' : 'text-green-500'
+                    }`}
+                  >
+                    {regNotification.message}
+                  </span>
+                )}
+              </div>
+
+              <Users className="h-6 w-6 text-muted-foreground" />
+            </div>
+          </CardHeader>
+
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Stage</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{getStageNameFromValue(user.stage, stages)}</TableCell>
+                    <TableCell>
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleMoveToNextStage(user)}
+                      >
+                        <ArrowRightCircle />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleMoveToStageClick(user)}
+                      >
+                        <ArrowRight />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditClick(user)}
+                      >
+                        <Edit />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(user)}
+                      >
+                        <Trash />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <FormField name="name" control={editForm.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl><Input {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField name="email" control={editForm.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl><Input type="email" {...field} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField name="password" control={editForm.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl><Input type="password" placeholder="Leave blank to keep current" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField name="stage" control={editForm.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stage</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>{renderStageSelectItems()}</SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <DialogFooter><Button type="submit">Save</Button></DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>Are you sure? This action is irreversible.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={onDeleteConfirm}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Move to Stage Dialog */}
+      <Dialog open={isMoveToStageDialogOpen} onOpenChange={setIsMoveToStageDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Move User to Stage</DialogTitle>
+          </DialogHeader>
+          <Form {...moveToStageForm}>
+            <form onSubmit={moveToStageForm.handleSubmit(onMoveToStageSubmit)} className="space-y-4">
+              <FormField name="stage" control={moveToStageForm.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stage</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>{renderStageSelectItems()}</SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <DialogFooter><Button type="submit">Move</Button></DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </AppLayout>
+  );
 }

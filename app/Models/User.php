@@ -21,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'stage', // Added stage to fillable attributes
+        'stage',
+        'status',
     ];
 
     /**

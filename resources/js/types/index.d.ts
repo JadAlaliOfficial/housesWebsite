@@ -42,3 +42,20 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface Stage {
+    id: number;
+    order: number;
+    name: string;
+    title: string;
+    subtitle?: string;
+    description?: string;
+    button_linking?: {
+        text: string;
+        popup: string;
+        status: string;
+    }[];
+    image?: string;
+    created_at: string;
+    updated_at: string;
+}

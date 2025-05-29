@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use App\Models\Stage;
 
 class DashboardController extends Controller
 {
+    
     /**
      * Display the dashboard with users data.
      *
@@ -21,8 +23,11 @@ class DashboardController extends Controller
             ->orderBy('id')
             ->get();
 
+        $stages = Stage::select('id', 'name', 'order')->orderBy('order')->get();
+        
         return Inertia::render('dashboard', [
-            'users' => $users
+            'users' => $users,
+            'stages' => $stages,
         ]);
     }
 
@@ -95,32 +100,21 @@ class DashboardController extends Controller
         return redirect()->route('dashboard');
     }
     
-    /**
-     * Move user to the next stage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function moveToNextStage($id)
-    {
-        $user = User::findOrFail($id);
-        $currentStage = (float) $user->stage;
-        
-        // Define the progression of stages
-        $stageProgression = [0, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6,6.5 , 7];
-        
-        // Find the current index
-        $currentIndex = array_search($currentStage, $stageProgression);
-        
-        // If found and not at the last stage, move to next stage
-        if ($currentIndex !== false && $currentIndex < count($stageProgression) - 1) {
-            $user->update([
-                'stage' => $stageProgression[$currentIndex + 1]
-            ]);
-        }
-            return redirect()->intended(route('dashboard', absolute: false));
+{
+    $user = User::findOrFail($id);
+    $currentOrder = (float) $user->stage;
 
+    // Find the next stage with a higher order
+    $nextStage = Stage::where('order', '>', $currentOrder)
+        ->orderBy('order')
+        ->first();
+
+    if ($nextStage) {
+        $user->update(['stage' => $nextStage->order,'status' => null]);
     }
+    return redirect()->intended(route('dashboard', absolute: false));
+}
     
     /**
      * Move user to a specific stage.
@@ -137,9 +131,46 @@ class DashboardController extends Controller
         
         $user = User::findOrFail($id);
         $user->update([
-            'stage' => $validated['stage']
+            'stage' => $validated['stage'],
+            'status' => null,
         ]);
         
         return redirect()->route('dashboard');
     }
+
+    public function handleButtonClick(Request $request, $id)
+{
+    $request->validate([
+        'button_text' => 'required|string',
+    ]);
+
+    $user = User::findOrFail($id);
+    $currentOrder = (float) $user->stage;
+
+    // Get the current stage
+    $stage = Stage::where('order', $currentOrder)->first();
+
+    if (!$stage) {
+        return redirect()->back()->withErrors(['stage' => 'Stage not found.']);
+    }
+
+    $buttonLinking = $stage->button_linking;
+
+    if (!is_array($buttonLinking)) {
+        return $this->moveToNextStage($id);
+    }
+
+    // Find the clicked button by its text
+    $button = collect($buttonLinking)->firstWhere('text', $request->button_text);
+
+    if (!$button || empty($button['status'])) {
+        // If no status is set for the button → move to next stage
+        return $this->moveToNextStage($id);
+    }
+
+    // If status exists → update user's status field
+    $user->update(['status' => $button['status']]);
+
+    return redirect()->route('dashboard')->with('success', 'Status updated.');
+}
 }
