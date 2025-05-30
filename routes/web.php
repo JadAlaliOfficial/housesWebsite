@@ -22,7 +22,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     ->name('admin.theme');
     Route::post('/admin/theme', [ThemeController::class, 'update'])->name('admin.theme.update');
 });
-Route::get('/preview', fn () => inertia('Preview'))->name('preview');
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
