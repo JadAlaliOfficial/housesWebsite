@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             'password' => 'password',
             'stage' => 0,
         ]);
+        $this->call(\Database\Seeders\ThemeSettingsSeeder::class);
 
     }
 }

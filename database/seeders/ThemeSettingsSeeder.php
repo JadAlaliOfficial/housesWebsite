@@ -1,0 +1,83 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\ThemeSetting;
+use Illuminate\Database\Seeder;
+
+class ThemeSettingsSeeder extends Seeder
+{
+    public function run(): void
+    {
+        ThemeSetting::firstOrCreate([], [
+            'light' => [
+                'background'                => '#FFFFFF',
+                'foreground'                => '#000000',
+                'card'                      => '#FFFFFF',
+                'card-foreground'           => '#000000',
+                'popover'                   => '#FFFFFF',
+                'popover-foreground'        => '#000000',
+                'primary'                   => '#2057FF',
+                'primary-foreground'        => '#FFFFFF',
+                'secondary'                 => '#F5F5F5',
+                'secondary-foreground'      => '#000000',
+                'muted'                     => '#E5E5E5',
+                'muted-foreground'          => '#555555',
+                'accent'                    => '#FFC107',
+                'accent-foreground'         => '#000000',
+                'destructive'               => '#DC2626',
+                'destructive-foreground'    => '#FFFFFF',
+                'border'                    => '#E5E7EB',
+                'input'                     => '#F9FAFB',
+                'ring'                      => '#3B82F6',
+                'chart-1'                   => '#2563EB',
+                'chart-2'                   => '#10B981',
+                'chart-3'                   => '#8B5CF6',
+                'chart-4'                   => '#F59E0B',
+                'chart-5'                   => '#EF4444',
+                'sidebar'                   => '#F3F4F6',
+                'sidebar-foreground'        => '#1F2937',
+                'sidebar-primary'           => '#3B82F6',
+                'sidebar-primary-foreground'=> '#FFFFFF',
+                'sidebar-accent'            => '#10B981',
+                'sidebar-accent-foreground' => '#FFFFFF',
+                'sidebar-border'            => '#E5E7EB',
+                'sidebar-ring'              => '#3B82F6',
+            ],
+            'dark' => [
+                'background'                => '#1A1A1A',
+                'foreground'                => '#F5F5F5',
+                'card'                      => '#2A2A2A',
+                'card-foreground'           => '#F5F5F5',
+                'popover'                   => '#2A2A2A',
+                'popover-foreground'        => '#F5F5F5',
+                'primary'                   => '#FFFFFF',
+                'primary-foreground'        => '#1A1A1A',
+                'secondary'                 => '#374151',
+                'secondary-foreground'      => '#F5F5F5',
+                'muted'                     => '#4B5563',
+                'muted-foreground'          => '#D1D5DB',
+                'accent'                    => '#FACC15',
+                'accent-foreground'         => '#1A1A1A',
+                'destructive'               => '#EF4444',
+                'destructive-foreground'    => '#FFFFFF',
+                'border'                    => '#374151',
+                'input'                     => '#374151',
+                'ring'                      => '#60A5FA',
+                'chart-1'                   => '#3B82F6',
+                'chart-2'                   => '#10B981',
+                'chart-3'                   => '#A78BFA',
+                'chart-4'                   => '#FBBF24',
+                'chart-5'                   => '#F87171',
+                'sidebar'                   => '#111827',
+                'sidebar-foreground'        => '#F9FAFB',
+                'sidebar-primary'           => '#FFFFFF',
+                'sidebar-primary-foreground'=> '#111827',
+                'sidebar-accent'            => '#22C55E',
+                'sidebar-accent-foreground' => '#111827',
+                'sidebar-border'            => '#374151',
+                'sidebar-ring'              => '#60A5FA',
+            ],
+        ]);
+    }
+}

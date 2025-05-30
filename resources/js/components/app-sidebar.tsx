@@ -18,6 +18,11 @@ const mainNavItems: NavItem[] = [
         href: '/stages',
         icon: Folder,
     },
+    {
+        title: 'Theme',
+        href: '/admin/theme',
+        icon: BookOpen,
+    }
 ];
 
 const footerNavItems: NavItem[] = [

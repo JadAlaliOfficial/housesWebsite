@@ -7,6 +7,7 @@ use App\Http\Controllers\WelcomeCController;
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\TemporaryLinkController;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Controllers\ThemeController;
 
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -17,7 +18,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/users/{id}', [DashboardController::class, 'destroy'])->name('users.destroy');
     Route::resource('stages', StageController::class);
     Route::post('/users/{id}/handle-button', [DashboardController::class, 'handleButtonClick'])->name('users.handleButtonClick');
+    Route::get('/admin/theme', [ThemeController::class, 'index'])
+    ->name('admin.theme');
+    Route::post('/admin/theme', [ThemeController::class, 'update'])->name('admin.theme.update');
 });
+Route::get('/preview', fn () => inertia('Preview'))->name('preview');
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
