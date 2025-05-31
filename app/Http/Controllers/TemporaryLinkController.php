@@ -34,7 +34,7 @@ class TemporaryLinkController extends Controller
 
     public function generateRegisterLink(Request $request)
     {
-        $expiresAt = Carbon::now()->addHours(3);
+        $expiresAt = Carbon::now()->addHours(7);
         $temporaryUrl = URL::temporarySignedRoute(
             'register.temp',
             $expiresAt

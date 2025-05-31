@@ -19,7 +19,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $users = User::select('id', 'name', 'email', 'stage', 'created_at')
+        $users = User::select('id', 'name', 'email', 'stage', 'created_at', 'status')
             ->orderBy('id')
             ->get();
 

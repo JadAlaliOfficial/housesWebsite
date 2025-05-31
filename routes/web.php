@@ -17,7 +17,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/users/{id}', [DashboardController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [DashboardController::class, 'destroy'])->name('users.destroy');
     Route::resource('stages', StageController::class);
-    Route::post('/users/{id}/handle-button', [DashboardController::class, 'handleButtonClick'])->name('users.handleButtonClick');
     Route::get('/admin/theme', [ThemeController::class, 'index'])
     ->name('admin.theme');
     Route::post('/admin/theme', [ThemeController::class, 'update'])->name('admin.theme.update');
@@ -46,5 +45,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeCController::class, 'index'])->name('home');
 Route::post('/users/{id}/move-to-next-stage', [DashboardController::class, 'moveToNextStage'])->name('users.moveToNextStage');
 Route::post('/users/{id}/move-to-stage', [DashboardController::class, 'moveToStage'])->name('users.moveToStage');
+Route::post('/users/{id}/handle-button', [DashboardController::class, 'handleButtonClick'])->name('users.handleButtonClick');
 });
 
