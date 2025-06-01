@@ -6,6 +6,8 @@ interface StepperSectionProps {
 }
 
 export default function StepperSection({ activeStep, steps }: StepperSectionProps) {
+    const isFinalStep = activeStep === steps.length - 1;
+    
     return (
         <div className="sticky top-0 z-10 w-full max-w-[1200px] bg-[#E6E6E6] px-4 py-4 dark:bg-[#0a0a0a]">
             <Box sx={{ width: '100%' }}>
@@ -57,8 +59,11 @@ export default function StepperSection({ activeStep, steps }: StepperSectionProp
                         },
                     }}
                 >
-                    {steps.map((stepItem) => (
-                        <Step key={stepItem.label}>
+                    {steps.map((stepItem, index) => (
+                        <Step 
+                            key={stepItem.label} 
+                            completed={isFinalStep || index < activeStep}
+                        >
                             <StepLabel>{stepItem.label}</StepLabel>
                         </Step>
                     ))}

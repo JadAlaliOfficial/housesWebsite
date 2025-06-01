@@ -44,6 +44,7 @@ html.dark {
 }
 
 /* You can keep your :root vars if you want defaults (OPTIONAL) */
+/* Add this to your :root section */
 :root {
   --color-background: #FFFFFF;
   --color-foreground: #000000;
@@ -68,9 +69,12 @@ html.dark {
   --color-sidebar-accent-foreground: #FFFFFF;
   --color-sidebar-border: #E5E7EB;
   --color-sidebar-ring: #3B82F6;
+  
+  /* Add the font-sans variable */
+  --font-sans: sans-serif;
 }
 
-/* Dark mode defaults (OPTIONAL, in case React hasn't run yet) */
+/* Also add it to dark mode if needed */
 html.dark {
   --color-background: #1A1A1A;
   --color-foreground: #F5F5F5;

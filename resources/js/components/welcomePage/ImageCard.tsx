@@ -35,7 +35,7 @@ export default function ImageCard({ currentStage }: ImageCardProps) {
             ) : (
               <motion.div
                 key="fallback"
-                className="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800"
+                className="flex h-full rounded-xl w-full items-center justify-center bg-gray-100 dark:bg-gray-800"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

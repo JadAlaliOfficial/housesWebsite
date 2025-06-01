@@ -48,7 +48,7 @@ export default function StagesIndex({ stages }: StagesIndexProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Stages" />
             <div className="flex h-full flex-1 flex-col gap-4 bg-[#E6E6E6] p-4 text-[#0a0a0a] dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">
-                <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212]">
+                <Card className="bg-white dark:bg-[#121212] dark:border-[#3E3E3A]">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <div>
                             <CardTitle className="text-xl font-bold">Stages Management</CardTitle>

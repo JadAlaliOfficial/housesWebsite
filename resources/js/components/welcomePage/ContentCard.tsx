@@ -139,7 +139,7 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
       <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmation</AlertDialogTitle>
+            <AlertDialogTitle>{currentButtonText}</AlertDialogTitle>
             <AlertDialogDescription>
               {currentPopupContent}
             </AlertDialogDescription>

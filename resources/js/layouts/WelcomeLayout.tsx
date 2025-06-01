@@ -52,8 +52,8 @@ export default function WelcomeLayout({ children, title = 'Roadmap' }: WelcomeLa
   return (
     <>
       <Head title={title}>
-        <link rel="preconnect" href="https://fonts.bunny.net" />
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        {/* <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" /> */}
         <link rel="icon" href={AppLogo} type="image/png" />
       </Head>
       <div className="flex min-h-screen flex-col items-center bg-[#E6E6E6] p-4 text-[#0a0a0a] lg:justify-center lg:p-4 dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">

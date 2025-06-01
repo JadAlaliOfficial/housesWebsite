@@ -182,7 +182,7 @@ export default function Dashboard({ users, stages }: DashboardProps) {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
-      <div className="p-4">
+      <div className="flex h-full flex-1 flex-col gap-4 bg-[#E6E6E6] p-4 text-[#0a0a0a] dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">
         <Card className="bg-white dark:bg-[#121212] dark:border-[#3E3E3A]">
           <CardHeader className="flex justify-between">
             <div>
