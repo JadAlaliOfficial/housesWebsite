@@ -102,6 +102,7 @@ class DashboardController extends Controller
     
     public function moveToNextStage($id)
 {
+    
     $user = User::findOrFail($id);
     $currentOrder = (float) $user->stage;
 
@@ -125,6 +126,7 @@ class DashboardController extends Controller
      */
     public function moveToStage(Request $request, $id)
     {
+        
         $validated = $request->validate([
             'stage' => ['required', 'numeric', 'min:0'],
         ]);
@@ -140,9 +142,13 @@ class DashboardController extends Controller
 
     public function handleButtonClick(Request $request, $id)
 {
+    dd("hi");
+
     $request->validate([
         'button_text' => 'required|string',
     ]);
+
+    
 
     $user = User::findOrFail($id);
     $currentOrder = (float) $user->stage;

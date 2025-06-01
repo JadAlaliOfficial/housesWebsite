@@ -50,12 +50,17 @@ export interface Stage {
     title: string;
     subtitle?: string;
     description?: string;
-    button_linking?: {
-        text: string;
-        popup: string;
-        status: string;
-    }[];
+    button_linking?: string; // JSON string that needs to be parsed
     image?: string;
     created_at: string;
     updated_at: string;
 }
+
+export interface ButtonLink {
+    text: string;
+    popup: string;
+    status: string;
+}
+
+export type StepKey = 'First step' | 'Second step' | 'Third step' | 'Fourth step' | 'Fifth step' | 'Sixth step' | 'Final step';
+export type Status = 'not requested' | 'on hold' | 'done';

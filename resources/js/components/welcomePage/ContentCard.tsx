@@ -1,18 +1,22 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { type StepContent, type StepKey, type Status } from '@/types';
-import { type User } from '@/types';
+import { type ButtonLink, type Status, type Stage, type User } from '@/types';
 import { router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 
 interface ContentCardProps {
-  currentStepContent: StepContent;
+  currentStepContent: {
+    header: string;
+    subheader?: string;
+    content: string;
+    buttonLinks: ButtonLink[];
+  };
   user: User;
-  step: StepKey;
+  stage: Stage;
   status: Status;
 }
 
-export default function ContentCard({ currentStepContent, user, step, status }: ContentCardProps) {
+export default function ContentCard({ currentStepContent, user, stage, status }: ContentCardProps) {
   const [processing, setProcessing] = useState(false);
   const [showSelfTooltip, setShowSelfTooltip] = useState(false);
   const [showAssistedTooltip, setShowAssistedTooltip] = useState(false);
@@ -21,11 +25,11 @@ export default function ContentCard({ currentStepContent, user, step, status }: 
   const selfButtonRef = useRef<HTMLButtonElement>(null);
   const assistedButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleMoveToNextStage = (user: User, action: 'self' | 'assisted') => {
+  const handleButtonClick = (user: User, buttonText: string) => {
     setProcessing(true);
     router.post(
       route('users.moveToNextStage', user.id),
-      { action }, // Send the action to the backend
+      { button_text: buttonText }, // Send the button text to the backend
       {
         preserveScroll: true,
         onFinish: () => setProcessing(false),
@@ -62,119 +66,91 @@ export default function ContentCard({ currentStepContent, user, step, status }: 
         </div>
       </div>
       <div className="pt-4">
-        {/* Special case for first step */}
-        {user.stage === 1 ? (
-          <Button className="min-w-[120px] cursor-pointer" onClick={() => handleMoveToNextStage(user, 'self')}>
-            Let's go
-          </Button>
-        ) : /* Special case for final step - no buttons */
-        user.stage === 7 ? null : (
-          /* Normal case for other steps */
+        {/* Render buttons based on buttonLinks from the stage */}
+        {currentStepContent.buttonLinks && currentStepContent.buttonLinks.length > 0 ? (
           <>
             <div className="relative flex flex-wrap gap-2">
-              <div className="relative">
-                <Button
-                  ref={selfButtonRef}
-                  className={`min-w-[120px] ${status === 'on hold' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                  disabled={status === 'on hold' || processing}
-                  onClick={() => handleMoveToNextStage(user, 'self')}
-                  onMouseEnter={() => setShowSelfTooltip(true)}
-                  onMouseLeave={() => setShowSelfTooltip(false)}
-                >
-                  {processing ? 'Processing...' : 'Do it yourself'}
-                </Button>
-                {/* Desktop tooltip */}
-                {showSelfTooltip && (
-                  <div className="absolute bottom-full left-0 z-50 mb-2 hidden w-64 rounded-md bg-white p-3 text-sm shadow-lg md:block dark:bg-gray-800">
-                    <div className="mb-1 font-semibold">Visit Our Trusted Partner</div>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Schedule a visit to explore products in person and receive personalized, expert guidance
-                      tailored to your needs.
-                    </p>
-                    <div className="absolute -bottom-2 left-5 h-3 w-3 rotate-45 bg-white dark:bg-gray-800"></div>
-                  </div>
-                )}
-              </div>
-
-              {/* Only show "Let us handle it" button for steps 2 and 3 */}
-              {(user.stage === 2 || user.stage === 2.5 || user.stage === 3 || user.stage === 3.5) && (
-                <div className="relative">
+              {currentStepContent.buttonLinks.map((buttonLink, index) => (
+                <div className="relative" key={index}>
                   <Button
-                    ref={assistedButtonRef}
-                    className={`min-w-[120px] ${status === 'on hold' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                    disabled={status === 'on hold' || processing}
-                    onClick={() => handleMoveToNextStage(user, 'assisted')}
-                    onMouseEnter={() => setShowAssistedTooltip(true)}
-                    onMouseLeave={() => setShowAssistedTooltip(false)}
+                    ref={index === 0 ? selfButtonRef : index === 1 ? assistedButtonRef : undefined}
+                    className={`min-w-[120px] rounded-xl ${buttonLink.status === 'On Hold' || buttonLink.status === 'on hold' || buttonLink.status === 'done' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                    disabled={buttonLink.status === 'On Hold' || buttonLink.status === 'on hold' || buttonLink.status === 'done' || processing}
+                    onClick={() => handleButtonClick(user, buttonLink.text)}
+                    onMouseEnter={() => index === 0 ? setShowSelfTooltip(true) : setShowAssistedTooltip(true)}
+                    onMouseLeave={() => index === 0 ? setShowSelfTooltip(false) : setShowAssistedTooltip(false)}
                   >
-                    {processing ? 'Processing...' : 'Let us handle it'}
+                    {processing ? 'Processing...' : buttonLink.text}
                   </Button>
                   {/* Info button for mobile */}
                   <button
-                    className="absolute top-1/2 right-[-30px] flex h-6 w-6 -translate-y-1/2 transform items-center justify-center rounded-full bg-gray-200 text-gray-700 md:hidden dark:bg-gray-700 dark:text-gray-300"
+                    className="absolute  top-1/2 right-[-30px] flex h-6 w-6 -translate-y-1/2 transform items-center justify-center rounded-full bg-gray-200 text-gray-700 md:hidden dark:bg-gray-700 dark:text-gray-300"
                     onClick={(e) => {
                       e.preventDefault();
-                      toggleMobileInfo('assisted');
+                      toggleMobileInfo(index === 0 ? 'self' : 'assisted');
                     }}
                     aria-label="More information"
                   >
                     <span className="text-xs font-bold">i</span>
                   </button>
                   {/* Desktop tooltip */}
-                  {showAssistedTooltip && (
+                  {(index === 0 ? showSelfTooltip : showAssistedTooltip) && (
                     <div className="absolute bottom-full left-0 z-50 mb-2 hidden w-64 rounded-md bg-white p-3 text-sm shadow-lg md:block dark:bg-gray-800">
-                      <div className="mb-1 font-semibold">Select from Curated Options Online</div>
+                      <div className="mb-1 font-semibold">{buttonLink.text}</div>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Access a collection of thoughtfully selected packages directly through your
-                        account—convenient, efficient, and tailored to your style.
+                        {buttonLink.popup && buttonLink.popup !== 'nothing' 
+                          ? buttonLink.popup 
+                          : 'No additional information available.'}
                       </p>
                       <div className="absolute -bottom-2 left-5 h-3 w-3 rotate-45 bg-white dark:bg-gray-800"></div>
                     </div>
                   )}
                 </div>
-              )}
+              ))}
             </div>
 
             {/* Mobile information panels - combined into one panel */}
             {(showSelfMobileInfo || showAssistedMobileInfo) && (
               <div className="mt-4 rounded-md bg-white p-3 text-sm shadow-md md:hidden dark:bg-gray-800">
-                <div className="mb-3 border-b border-gray-200 pb-3 dark:border-gray-700">
-                  <div className="mb-1 font-semibold">Visit Our Trusted Partner ( Do it yourself )</div>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Schedule a visit to explore products in person and receive personalized, expert guidance
-                    tailored to your needs.
-                  </p>
-                </div>
-
-                {(user.stage === 2 || user.stage === 2.5 || user.stage === 3 || user.stage === 3.5) && (
-                  <div>
-                    <div className="mb-1 font-semibold">
-                      Select from Curated Options Online ( Let's handle it )
-                    </div>
+                {currentStepContent.buttonLinks.map((buttonLink, index) => (
+                  <div key={index} className={index !== 0 ? "mt-3 border-t border-gray-200 pt-3 dark:border-gray-700" : "mb-3 border-b border-gray-200 pb-3 dark:border-gray-700"}>
+                    <div className="mb-1 font-semibold">{buttonLink.text}</div>
                     <p className="text-gray-700 dark:text-gray-300">
-                      Access a collection of thoughtfully selected packages directly through your
-                      account—convenient, efficient, and tailored to your style.
+                      {buttonLink.popup && buttonLink.popup !== 'nothing' 
+                        ? buttonLink.popup 
+                        : 'No additional information available.'}
                     </p>
                   </div>
-                )}
+                ))}
               </div>
             )}
-            <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm font-medium">Status:</span>
-              <span
-                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                  status === 'not requested'
-                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                    : status === 'on hold'
-                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
-                      : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                }`}
-              >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </span>
-            </div>
+            {/* Show status if available in the first button link */}
+            {currentStepContent.buttonLinks.length > 0 && currentStepContent.buttonLinks[0].status && (
+              <div className="mt-4 flex items-center gap-2">
+                <span className="text-sm font-medium">Status:</span>
+                <span
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                    currentStepContent.buttonLinks[0].status === '0' || currentStepContent.buttonLinks[0].status === 'not requested'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      : currentStepContent.buttonLinks[0].status === 'On Hold' || currentStepContent.buttonLinks[0].status === 'on hold'
+                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                        : currentStepContent.buttonLinks[0].status === 'done'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                  }`}
+                >
+                  {currentStepContent.buttonLinks[0].status === '0' || currentStepContent.buttonLinks[0].status === 'not requested'
+                    ? 'Not Requested'
+                    : currentStepContent.buttonLinks[0].status === 'On Hold' || currentStepContent.buttonLinks[0].status === 'on hold'
+                      ? 'On Hold'
+                      : currentStepContent.buttonLinks[0].status === 'done'
+                        ? 'Done'
+                        : currentStepContent.buttonLinks[0].status}
+                </span>
+              </div>
+            )}
           </>
-        )}
+        ) : null}
       </div>
     </Card>
   );

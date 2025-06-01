@@ -1,27 +1,20 @@
-import FirstPicForDesktop from '@/assets/d/d_1.png';
-import SecondPicForDesktop from '@/assets/d/d_2.png';
-import ThirdPicForDesktop from '@/assets/d/d_3.png';
-import FourthPicForDesktop from '@/assets/d/d_4.png';
-import FifthPicForDesktop from '@/assets/d/d_5.png';
-import SixthPicForDesktop from '@/assets/d/d_6.jpg';
-import FinalPicForDesktop from '@/assets/d/d_7.jpg'; // Updated to d_7.jpg for the final step
 import AppLogo from '@/assets/logo.png';
 import Header from '@/components/welcomePage/Header';
 import StepperSection from '@/components/welcomePage/StepperSection';
 import ImageCard from '@/components/welcomePage/ImageCard';
 import ContentCard from '@/components/welcomePage/ContentCard';
-import { imageArray } from '@/data/images';
-import { stepContentMap, stepLabels, getStepAndStatus, stepToImageIndex } from '@/data/steps';
-import { type SharedData, type User } from '@/types';
+import { type SharedData, type User, type Stage, type ButtonLink, type StepKey, type Status } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 type WelcomePageProps = SharedData & {
     user: User;
+    stages: Stage[];
 };
 
 export default function Welcome_c() {
-    const { auth, user } = usePage<WelcomePageProps>().props;
+    const { auth, user, stages } = usePage<WelcomePageProps>().props;
+    console.log(user, stages);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [direction, setDirection] = useState<1 | -1>(1);
     const [darkMode, setDarkMode] = useState(() => {
@@ -39,23 +32,37 @@ export default function Welcome_c() {
         localStorage.setItem('darkMode', String(newMode));
     };
     
-    // Modified to handle the final step as completed
-    // Updated to account for the new 6th step, making the final step 7
-    const activeStep = user.stage === 7 ? stepLabels.length : Math.floor(Number(user.stage)) - 1;
-
-    const { step, status } = getStepAndStatus(Number(user.stage));
-    const currentStepContent = stepContentMap[step];
-
-    const targetImageIndex = stepToImageIndex[step] || 0;
-
-    // Set the image index with animation
-    useEffect(() => {
-        // Determine direction based on current and target index
-        const newDirection = targetImageIndex > currentImageIndex ? 1 : -1;
-        setDirection(newDirection);
-        setCurrentImageIndex(targetImageIndex);
-    }, [targetImageIndex]);
-
+    // Get the current stage based on user.stage
+    const currentStage = stages.find(stage => stage.order === Number(user.stage)) || stages[0];
+    
+    // Create step labels from stages data
+    const stepLabels = stages.map(stage => ({ label: stage.name }));
+    
+    // Get the active step index (0-based)
+    const activeStep = Math.max(0, Number(user.stage) - 1);
+    
+    // Parse button_linking JSON string
+    const parseButtonLinks = (buttonLinkingStr?: string): ButtonLink[] => {
+        if (!buttonLinkingStr) return [];
+        try {
+            return JSON.parse(buttonLinkingStr);
+        } catch (e) {
+            console.error('Error parsing button_linking:', e);
+            return [];
+        }
+    };
+    
+    // Create current step content from current stage
+    const currentStepContent = {
+        header: currentStage.title,
+        subheader: currentStage.subtitle,
+        content: currentStage.description || '',
+        buttonLinks: parseButtonLinks(currentStage.button_linking)
+    };
+    
+    // Determine status based on user stage
+    const status: Status = 'not requested';
+    
     // Apply dark mode class to document
     useEffect(() => {
         if (darkMode) {
@@ -82,16 +89,14 @@ export default function Welcome_c() {
                     <main className="mt-5 flex w-full max-w-[1200px] flex-col gap-2 md:items-center lg:h-[69vh] lg:w-[90vw] lg:flex-row lg:items-stretch">
                         {/* Image Card - Now using the ImageCard component */}
                         <ImageCard 
-                            currentImageIndex={currentImageIndex}
-                            imageArray={imageArray}
-                            step={step}
+                            currentStage={currentStage}
                         />
 
                         {/* Content Card - Now using the ContentCard component */}
                         <ContentCard
                             currentStepContent={currentStepContent}
                             user={user}
-                            step={step}
+                            stage={currentStage}
                             status={status}
                         />
                     </main>
