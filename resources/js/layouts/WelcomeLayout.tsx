@@ -3,7 +3,8 @@ import Header from '@/components/welcomePage/Header';
 import StepperSection from '@/components/welcomePage/StepperSection';
 import { type SharedData, type User, type Stage } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
+import { useAppearance } from '@/hooks/appearance-context';
 
 type WelcomeLayoutProps = {
   children: ReactNode;
@@ -18,20 +19,14 @@ type WelcomePageData = SharedData & {
 export default function WelcomeLayout({ children, title = 'Roadmap' }: WelcomeLayoutProps) {
   const { auth, user, stages } = usePage<WelcomePageData>().props;
   
-  // Dark mode state and logic
-  const [darkMode, setDarkMode] = useState(() => {
-    // Check if user preference is stored in localStorage
-    const savedMode = localStorage.getItem('darkMode');
-    // Return true if saved as 'true', or check system preference as fallback
-    return savedMode ? savedMode === 'true' : 
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+  // Use the appearance hook instead of local state
+  const { appearance, updateAppearance } = useAppearance();
+  const darkMode = appearance === 'dark' || 
+    (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   
   // Toggle dark mode function
   const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', String(newMode));
+    updateAppearance(darkMode ? 'light' : 'dark');
   };
   
   // Create step labels from stages data
@@ -39,15 +34,6 @@ export default function WelcomeLayout({ children, title = 'Roadmap' }: WelcomeLa
   
   // Get the active step index (0-based)
   const activeStep = Math.max(0, Number(user.stage) - 1);
-  
-  // Apply dark mode class to document
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   return (
     <>
@@ -56,7 +42,7 @@ export default function WelcomeLayout({ children, title = 'Roadmap' }: WelcomeLa
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" /> */}
         <link rel="icon" href={AppLogo} type="image/png" />
       </Head>
-      <div className="flex min-h-screen flex-col items-center bg-[#E6E6E6] p-4 text-[#0a0a0a] lg:justify-center lg:p-4 dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">
+      <div className="flex min-h-screen flex-col items-center bg-background p-4 text-foreground lg:justify-center lg:p-4 dark:bg-background dark:text-foreground">
         <Header auth={auth} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
         <div className="flex w-full flex-col items-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
           {/* Horizontal Stepper */}

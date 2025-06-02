@@ -25,7 +25,7 @@ export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) 
                             <>
                                 <Link
                                     href={route('dashboard')}
-                                    className="inline-block rounded-sm border border-[#d1d5db] px-5 py-1.5 text-sm leading-normal text-[#0a0a0a] hover:border-[#9ca3af] dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                    className="inline-block rounded-sm border border-border px-5 py-1.5 text-sm leading-normal text-foreground hover:border-border dark:border-border dark:text-foreground dark:hover:border-border"
                                 >
                                     Dashboard
                                 </Link>
@@ -33,7 +33,7 @@ export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) 
                                     href={route('logout')}
                                     method="post"
                                     as="button"
-                                    className="inline-flex items-center gap-2 rounded-sm border border-[#d1d5db] px-5 py-1.5 text-sm leading-normal text-[#0a0a0a] hover:border-[#9ca3af] dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                    className="inline-flex items-center gap-2 rounded-sm border border-border px-5 py-1.5 text-sm leading-normal text-foreground hover:border-border dark:border-border dark:text-foreground dark:hover:border-border"
                                 >
                                     <LogOut className="h-4 w-4" />
                                     Logout
@@ -44,7 +44,7 @@ export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) 
                                 href={route('logout')}
                                 method="post"
                                 as="button"
-                                className="inline-flex items-center gap-2 rounded-sm border border-[#d1d5db] px-5 py-1.5 text-sm leading-normal text-[#0a0a0a] hover:border-[#9ca3af] dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                className="inline-flex items-center gap-2 rounded-sm border border-border px-5 py-1.5 text-sm leading-normal text-foreground hover:border-border dark:border-border dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
                             >
                                 <LogOut className="h-4 w-4" />
                                 Logout
@@ -53,7 +53,7 @@ export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) 
                     ) : (
                         <Link
                             href={route('login')}
-                            className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#0a0a0a] hover:border-[#d1d5db] dark:text-[#E6E6E6] dark:hover:border-[#3E3E3A]"
+                            className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-foreground hover:border-border dark:text-foreground dark:hover:border-border"
                         >
                             Log in
                         </Link>
@@ -62,7 +62,7 @@ export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) 
                     {/* Dark mode toggle button */}
                     <button
                         onClick={toggleDarkMode}
-                        className="flex h-9 w-9 items-center justify-center rounded-sm border border-[#d1d5db] text-[#0a0a0a] transition-colors hover:border-[#9ca3af] dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                        className="flex h-9 w-9 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-border dark:border-border dark:text-foreground dark:hover:border-border"
                         aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {darkMode ? (

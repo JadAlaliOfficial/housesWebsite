@@ -15,15 +15,25 @@ export default function WelcomePage() {
   // Get the current stage based on user.stage
   const currentStage = stages.find(stage => stage.order === Number(user.stage)) || stages[0];
   
-  // Parse button_linking JSON string
-  const parseButtonLinks = (buttonLinkingStr?: string): ButtonLink[] => {
-    if (!buttonLinkingStr) return [];
-    try {
-      return JSON.parse(buttonLinkingStr);
-    } catch (e) {
-      console.error('Error parsing button_linking:', e);
-      return [];
+  // Parse button_linking into ButtonLink array
+  const parseButtonLinks = (buttonLinking: any): ButtonLink[] => {
+    if (!buttonLinking) return [];
+    
+    // If it's already an array, return it directly
+    if (Array.isArray(buttonLinking)) {
+      return buttonLinking.map(link => ({
+        text: link.text || '',
+        popup: link.popup || 'nothing',
+        status: link.status || '0'
+      }));
     }
+    
+    // If it's a single object, wrap it in an array
+    return [{
+      text: buttonLinking.text || '',
+      popup: buttonLinking.popup || 'nothing',
+      status: buttonLinking.status || '0'
+    }];
   };
   
   // Create current step content from current stage
