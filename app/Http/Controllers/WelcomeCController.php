@@ -9,10 +9,26 @@ use App\Models\Stage;
 class WelcomeCController extends Controller
 {
     public function index()
-    {
-        return Inertia::render('welcome', [
-            'user' => Auth::user(),
-            'stages' => Stage::orderBy('order')->get(),
-        ]);
-    }
+{
+    $stages = Stage::orderBy('order')->get();
+
+    // Map each stage and decode button_linking
+    $stagesTransformed = $stages->map(function ($stage) {
+        return [
+            'id' => $stage->id,
+            'name' => $stage->name,
+            'order' => $stage->order,
+            'button_linking' => json_decode($stage->button_linking, true),
+            'title' => $stage->title,
+            'description' => $stage->description,
+            'image' => $stage->image,
+            'subtitle' => $stage->subtitle,
+        ];
+    });
+
+    return Inertia::render('welcome', [
+        'user' => Auth::user(),
+        'stages' => $stagesTransformed,
+    ]);
+}
 }

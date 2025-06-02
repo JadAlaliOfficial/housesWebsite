@@ -193,26 +193,56 @@ export default function Dashboard({ users, stages }: DashboardProps) {
             </div>
             <div className="flex items-center gap-2">
               {/* Add User */}
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Plus className="mr-2 h-4 w-4" /> Add User
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create New User</DialogTitle>
-                  </DialogHeader>
-                  <Form {...createForm}>
-                    <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                      {/* name, email, password, stage fields… */}
-                      <DialogFooter>
-                        <Button type="submit">Save</Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
+<Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+  <DialogTrigger asChild>
+    <Button variant="outline" size="sm">
+      <Plus className="mr-2 h-4 w-4" /> Add User
+    </Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Create New User</DialogTitle>
+    </DialogHeader>
+    <Form {...createForm}>
+      <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+        <FormField name="name" control={createForm.control} render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl><Input {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField name="email" control={createForm.control} render={({ field }) => (
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl><Input type="email" {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField name="password" control={createForm.control} render={({ field }) => (
+          <FormItem>
+            <FormLabel>Password</FormLabel>
+            <FormControl><Input type="password" {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField name="stage" control={createForm.control} render={({ field }) => (
+          <FormItem>
+            <FormLabel>Stage</FormLabel>
+            <Select onValueChange={(v) => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}>
+              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+              <SelectContent>{renderStageSelectItems()}</SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <DialogFooter>
+          <Button type="submit">Save</Button>
+        </DialogFooter>
+      </form>
+    </Form>
+  </DialogContent>
+</Dialog>
 
               {/* Temp Reset Link */}
               <div className="flex flex-col items-start">

@@ -38,23 +38,34 @@ class DashboardController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
-            'stage' => ['required', 'numeric', 'min:0'], // Changed from integer to numeric
-        ]);
+{
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => ['required', 'string', 'min:8'],
+        'stage' => ['nullable', 'numeric', 'min:0'],
+    ]);
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'stage' => $validated['stage'],
-        ]);
+    // If no stage is provided, find the smallest stage with order > 0
+    $stage = $validated['stage'] ?? Stage::where('order', '>', 0)
+        ->orderBy('order')
+        ->value('order');
 
-        return redirect()->route('dashboard');
+    // Optional: handle if no stage exists in the database
+    if (is_null($stage)) {
+        return redirect()->back()->withErrors(['stage' => 'No valid stage found. Please create a stage first.']);
     }
+
+    User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        'stage' => $stage,
+    ]);
+
+    return redirect()->route('dashboard');
+}
+
 
     /**
      * Update the specified user.
