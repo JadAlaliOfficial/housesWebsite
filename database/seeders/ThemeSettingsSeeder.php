@@ -43,6 +43,12 @@ class ThemeSettingsSeeder extends Seeder
                 'sidebar-accent-foreground' => '#FFFFFF',
                 'sidebar-border'            => '#E5E7EB',
                 'sidebar-ring'              => '#3B82F6',
+                'welcome-background'         => '#0a0a0a',
+    'welcome-foreground'         => '#e6e6e6',
+    'welcome-secondary'          => 'rgba(230, 230, 230, 0.8)',
+    'welcome-border'             => '#374151',
+    'welcome-button'             => '#1d4ed8',
+    'welcome-button-text'        => '#ffffff',
             ],
             'dark' => [
                 'background'                => '#1A1A1A',
@@ -77,6 +83,12 @@ class ThemeSettingsSeeder extends Seeder
                 'sidebar-accent-foreground' => '#111827',
                 'sidebar-border'            => '#374151',
                 'sidebar-ring'              => '#60A5FA',
+                'welcome-background'         => '#0a0a0a',
+    'welcome-foreground'         => '#e6e6e6',
+    'welcome-secondary'          => 'rgba(230, 230, 230, 0.8)',
+    'welcome-border'             => '#374151',
+    'welcome-button'             => '#1d4ed8',
+    'welcome-button-text'        => '#ffffff',
             ],
         ]);
     }

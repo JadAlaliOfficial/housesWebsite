@@ -40,8 +40,8 @@ const stageFormSchema = z.object({
     button_linking: z.array(
         z.object({
             text: z.string().min(1, { message: 'Button text is required.' }),
-            popup: z.string().min(1, { message: 'Popup content is required.' }).max(500, { message: 'Popup cannot exceed 500 characters.' }),
-            status: z.string().min(1, { message: 'Status is required.' }),
+            popup: z.union([z.string().max(500), z.literal('')]).optional(),
+            status: z.union([z.string(), z.literal('')]).optional(),
         })
     ).optional(),
     image: z.any().optional(),
@@ -81,8 +81,14 @@ export default function StageEdit({ stage }: EditStageProps) {
         if (data.button_linking && data.button_linking.length > 0) {
             data.button_linking.forEach((button, index) => {
                 formData.append(`button_linking[${index}][text]`, button.text);
-                formData.append(`button_linking[${index}][popup]`, button.popup);
-                formData.append(`button_linking[${index}][status]`, button.status); 
+        
+                if (button.popup) {
+                    formData.append(`button_linking[${index}][popup]`, button.popup);
+                }
+        
+                if (button.status) {
+                    formData.append(`button_linking[${index}][status]`, button.status);
+                }
             });
         }
         

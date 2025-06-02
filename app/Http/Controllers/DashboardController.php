@@ -157,7 +157,6 @@ class DashboardController extends Controller
     $request->validate([
         'button_text' => 'required|string',
     ]);
-
     
 
     $user = User::findOrFail($id);
@@ -170,7 +169,7 @@ class DashboardController extends Controller
         return redirect()->back()->withErrors(['stage' => 'Stage not found.']);
     }
 
-    $buttonLinking = $stage->button_linking;
+    $buttonLinking = json_decode($stage->button_linking, true);
 
     if (!is_array($buttonLinking)) {
         return $this->moveToNextStage($id);

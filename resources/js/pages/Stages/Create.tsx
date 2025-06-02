@@ -22,15 +22,13 @@ const stageFormSchema = z.object({
   title: z.string().min(2, { message: 'Title must be at least 2 characters.' }),
   subtitle: z.string().optional(),
   description: z.string().optional(),
-  button_linking: z
-    .array(
-      z.object({
+  button_linking: z.array(
+    z.object({
         text: z.string().min(1, { message: 'Button text is required.' }),
-        popup: z.string().min(1, { message: 'Popup content is required.' }).max(500),
-        status: z.string().min(1, { message: 'Status is required.' }),
-      })
-    )
-    .optional(),
+        popup: z.union([z.string().max(500), z.literal('')]).optional(),
+        status: z.union([z.string(), z.literal('')]).optional(),
+    })
+).optional(),
   image: z.any().optional(),
 });
 
@@ -60,12 +58,19 @@ export default function StageCreate() {
     formData.append('name', data.name);
     formData.append('title', data.title);
     if (data.subtitle) formData.append('subtitle', data.subtitle);
-    if (data.description) formData.append('description', data.description);
-    data.button_linking?.forEach((button, index) => {
-      formData.append(`button_linking[${index}][text]`, button.text);
-      formData.append(`button_linking[${index}][popup]`, button.popup);
-      formData.append(`button_linking[${index}][status]`, button.status);
-    });
+    if (data.button_linking && data.button_linking.length > 0) {
+      data.button_linking.forEach((button, index) => {
+          formData.append(`button_linking[${index}][text]`, button.text);
+  
+          if (button.popup) {
+              formData.append(`button_linking[${index}][popup]`, button.popup);
+          }
+  
+          if (button.status) {
+              formData.append(`button_linking[${index}][status]`, button.status);
+          }
+      });
+  }
 
     const imageInput = document.getElementById('image') as HTMLInputElement;
     if (imageInput?.files?.[0]) {

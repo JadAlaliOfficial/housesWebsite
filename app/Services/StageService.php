@@ -55,6 +55,23 @@ class StageService
 
         // Handle button linking JSON conversion
         if (isset($data['button_linking']) && is_array($data['button_linking'])) {
+            // Inline cleaning of null values
+            array_walk_recursive($data['button_linking'], function (&$value, $key) use (&$data) {
+                if ($value === null) {
+                    $value = '__REMOVE__'; // Temporary marker
+                }
+            });
+        
+            // Remove all keys that were marked
+            $data['button_linking'] = json_decode(
+                json_encode($data['button_linking']),
+                true
+            );
+        
+            $data['button_linking'] = array_filter($data['button_linking'], function ($value) {
+                return $value !== '__REMOVE__';
+            });
+        
             $data['button_linking'] = json_encode($data['button_linking']);
         }
 
@@ -83,6 +100,23 @@ class StageService
 
         // Handle button linking JSON conversion
         if (isset($data['button_linking']) && is_array($data['button_linking'])) {
+            // Inline cleaning of null values
+            array_walk_recursive($data['button_linking'], function (&$value, $key) use (&$data) {
+                if ($value === null) {
+                    $value = '__REMOVE__'; // Temporary marker
+                }
+            });
+        
+            // Remove all keys that were marked
+            $data['button_linking'] = json_decode(
+                json_encode($data['button_linking']),
+                true
+            );
+        
+            $data['button_linking'] = array_filter($data['button_linking'], function ($value) {
+                return $value !== '__REMOVE__';
+            });
+        
             $data['button_linking'] = json_encode($data['button_linking']);
         }
 

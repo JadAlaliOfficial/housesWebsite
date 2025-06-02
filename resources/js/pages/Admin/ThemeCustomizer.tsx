@@ -33,19 +33,24 @@ export default function ThemeCustomizer() {
   }
 
   const renderInputs = (obj: Theme, setter: (v: Theme) => void) =>
-    Object.entries(obj).map(([key, val]) => (
-      <div key={key} className="mb-4">
-        <label className="block mb-1 text-sm font-medium">{key}</label>
-        <input
-          type="color"
-          value={val}
-          onChange={(e) =>
-            setter({ ...obj, [key]: e.target.value })
-          }
-          className="h-10 w-10 p-0 border rounded"
-        />
-      </div>
-    ))
+    Object.entries(obj).map(([key, val]) => {
+      // Detect if it's a hex color (supports #RRGGBB and #RGB)
+      const isColorInput = /^#([0-9A-Fa-f]{3}){1,2}$/.test(val)
+  
+      return (
+        <div key={key} className="mb-4">
+          <label className="block mb-1 text-sm font-medium">{key}</label>
+          <input
+            type={isColorInput ? 'color' : 'text'}
+            value={val}
+            onChange={(e) =>
+              setter({ ...obj, [key]: e.target.value })
+            }
+            className={`w-full border rounded px-2 py-1 ${isColorInput ? 'h-10 w-10 p-0' : ''}`}
+          />
+        </div>
+      )
+    })
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>

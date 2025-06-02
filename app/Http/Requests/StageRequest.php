@@ -29,7 +29,7 @@ class StageRequest extends FormRequest
             'description' => 'nullable|string',
             'button_linking' => 'nullable|array',
             'button_linking.*.text' => 'required_with:button_linking|string|max:255',
-            'button_linking.*.popup' => 'required_with:button_linking|string|max:500',
+            'button_linking.*.popup' => 'string|max:500',
             'button_linking.*.status' => 'string|max:255',
         ];
 
