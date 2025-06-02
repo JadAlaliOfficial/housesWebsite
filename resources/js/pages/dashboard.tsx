@@ -288,6 +288,7 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Stage</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -299,6 +300,7 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{getStageNameFromValue(user.stage, stages)}</TableCell>
+                    <TableCell>{user.status ?? 'Not Requested'}</TableCell>
                     <TableCell>
                       {new Date(user.created_at).toLocaleDateString()}
                     </TableCell>
