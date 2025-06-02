@@ -37,20 +37,29 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
   const [currentButtonText, setCurrentButtonText] = useState('');
   const [currentPopupContent, setCurrentPopupContent] = useState('');
 
-  const handleButtonClick = (buttonText: string, popup: string) => {
-    if (popup && popup !== 'nothing') {
-      setCurrentButtonText(buttonText);
-      setCurrentPopupContent(popup);
-      setAlertDialogOpen(true);
-    } else {
+  const handleButtonClick = (buttonText: string, popup: string, buttonStatus: string | null) => {
+    // If button_linking status is null, submit directly
+    if (buttonStatus === null) {
       submitAction(buttonText);
+      return;
+    }
+    
+    // If user status is null and button has status, show alert dialog if popup exists
+    if (user.status === null) {
+      if (popup && popup !== 'nothing') {
+        setCurrentButtonText(buttonText);
+        setCurrentPopupContent(popup);
+        setAlertDialogOpen(true);
+      } else {
+        submitAction(buttonText);
+      }
     }
   };
 
   const submitAction = (buttonText: string) => {
     setProcessing(true);
     router.post(
-      route('users.moveToNextStage', user.id),
+      route('users.handleButtonClick', user.id),
       { button_text: buttonText },
       {
         preserveScroll: true,
@@ -58,6 +67,9 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
       },
     );
   };
+
+  // Determine if all buttons should be disabled
+  const allButtonsDisabled = user.status !== null;
 
   return (
     <>
@@ -85,71 +97,84 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
           {currentStepContent.buttonLinks?.length > 0 && (
             <>
               <div className="relative flex flex-wrap gap-2">
-                {currentStepContent.buttonLinks.map((buttonLink, index) => (
-                  <div className="relative" key={index}>
-                    <Button
-                      ref={index === 0 ? selfButtonRef : index === 1 ? assistedButtonRef : undefined}
-                      className={`min-w-[120px] rounded-xl bg-primary text-secondary ${
-                        buttonLink.status === 'On Hold' || 
-                        buttonLink.status === 'on hold' || 
-                        buttonLink.status === 'done' ? 
-                        'cursor-not-allowed opacity-50' : 
-                        'cursor-pointer hover:bg-primary/90'
-                      }`}
-                      disabled={
-                        buttonLink.status === 'On Hold' || 
-                        buttonLink.status === 'on hold' || 
-                        buttonLink.status === 'done' || 
-                        processing
-                      }
-                      onClick={() => handleButtonClick(buttonLink.text, buttonLink.popup)}
-                    >
-                      {processing ? (
-                        <div className="flex items-center gap-2">
-                          <LoaderCircle className="h-4 w-4 animate-spin" />
-                          <span>Processing...</span>
-                        </div>
-                      ) : (
-                        buttonLink.text
-                      )}
-                    </Button>
-                  </div>
-                ))}
+                {currentStepContent.buttonLinks.map((buttonLink, index) => {
+                  // Determine button status text
+                  const statusText = 
+                    buttonLink.status === null ? 'Not Requested' : 
+                    user.status === null ? 'Not Requested' : 
+                    buttonLink.status;
+                  
+                  // Determine if button should be disabled
+                  const isDisabled = 
+                    allButtonsDisabled || 
+                    processing || 
+                    buttonLink.status === 'On Hold' || 
+                    buttonLink.status === 'on hold' || 
+                    buttonLink.status === 'done';
+
+                  return (
+                    <div className="relative" key={index}>
+                      <Button
+                        ref={index === 0 ? selfButtonRef : index === 1 ? assistedButtonRef : undefined}
+                        className={`min-w-[120px] rounded-xl bg-primary text-secondary ${
+                          isDisabled ? 
+                          'cursor-not-allowed opacity-50' : 
+                          'cursor-pointer hover:bg-primary/90'
+                        }`}
+                        disabled={isDisabled}
+                        onClick={() => handleButtonClick(
+                          buttonLink.text, 
+                          buttonLink.popup, 
+                          buttonLink.status
+                        )}
+                      >
+                        {processing ? (
+                          <div className="flex items-center gap-2">
+                            <LoaderCircle className="h-4 w-4 animate-spin" />
+                            <span>Processing...</span>
+                          </div>
+                        ) : (
+                          buttonLink.text
+                        )}
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
 
-              {currentStepContent.buttonLinks[0].status && (
-                <div className="mt-4 flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">Status:</span>
-                  <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                      currentStepContent.buttonLinks[0].status === '0' || 
-                      currentStepContent.buttonLinks[0].status === 'not requested'
-                        ? 'bg-destructive/10 text-destructive'
-                        : currentStepContent.buttonLinks[0].status === 'On Hold' || 
-                          currentStepContent.buttonLinks[0].status === 'on hold'
-                          ? 'bg-warning/10 text-warning'
-                          : currentStepContent.buttonLinks[0].status === 'done'
-                            ? 'bg-success/10 text-success'
-                            : 'bg-primary/10 text-primary'
-                    }`}
-                  >
-                    {currentStepContent.buttonLinks[0].status === '0' || 
-                     currentStepContent.buttonLinks[0].status === 'not requested'
-                      ? 'Not Requested'
+              {/* Status display - shows status of first button */}
+              <div className="mt-4 flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">Status:</span>
+                <span
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                    currentStepContent.buttonLinks[0].status === null || 
+                    user.status === null
+                      ? 'bg-destructive/10 text-destructive'
                       : currentStepContent.buttonLinks[0].status === 'On Hold' || 
                         currentStepContent.buttonLinks[0].status === 'on hold'
-                        ? 'On Hold'
+                        ? 'bg-warning/10 text-warning'
                         : currentStepContent.buttonLinks[0].status === 'done'
-                          ? 'Done'
-                          : currentStepContent.buttonLinks[0].status}
-                  </span>
-                </div>
-              )}
+                          ? 'bg-success/10 text-success'
+                          : 'bg-primary/10 text-primary'
+                  }`}
+                >
+                  {currentStepContent.buttonLinks[0].status === null || 
+                   user.status === null
+                    ? 'Not Requested'
+                    : currentStepContent.buttonLinks[0].status === 'On Hold' || 
+                      currentStepContent.buttonLinks[0].status === 'on hold'
+                      ? 'On Hold'
+                      : currentStepContent.buttonLinks[0].status === 'done'
+                        ? 'Done'
+                        : currentStepContent.buttonLinks[0].status}
+                </span>
+              </div>
             </>
           )}
         </div>
       </Card>
 
+      {/* Alert Dialog for confirmation */}
       <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

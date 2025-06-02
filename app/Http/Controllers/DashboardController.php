@@ -153,7 +153,6 @@ class DashboardController extends Controller
 
     public function handleButtonClick(Request $request, $id)
 {
-    dd("hi");
 
     $request->validate([
         'button_text' => 'required|string',
