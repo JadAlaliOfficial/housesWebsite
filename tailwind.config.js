@@ -11,11 +11,19 @@ module.exports = {
       extend: {
         // map your CSS custom properties to Tailwind utilities
         colors: {
+
           background: 'var(--color-background)',
           foreground: 'var(--color-foreground)',
   
           card: 'var(--color-card)',
           'card-foreground': 'var(--color-card-foreground)',
+          // Add welcome page specific colors
+        'welcome-background': 'var(--color-welcome-background)',
+        'welcome-foreground': 'var(--color-welcome-foreground)',
+        'welcome-secondary': 'var(--color-welcome-secondary)',
+        'welcome-border': 'var(--color-welcome-border)',
+        'welcome-button': 'var(--color-welcome-button)',
+        'welcome-button-text': 'var(--color-welcome-button-text)',
   
           popover: 'var(--color-popover)',
           'popover-foreground': 'var(--color-popover-foreground)',

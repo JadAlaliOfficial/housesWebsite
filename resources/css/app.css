@@ -69,6 +69,13 @@ html.dark {
   --color-sidebar-accent-foreground: #FFFFFF;
   --color-sidebar-border: #E5E7EB;
   --color-sidebar-ring: #3B82F6;
+
+  --color-welcome-background: #ffffff;
+  --color-welcome-foreground: #000000;
+  --color-welcome-secondary: rgba(0, 0, 0, 0.8); /* 80% opacity of foreground */
+  --color-welcome-border: #e5e7eb;
+  --color-welcome-button: #3b82f6; /* Example blue */
+  --color-welcome-button-text: #ffffff;
   
   /* Add the font-sans variable */
   --font-sans: sans-serif;
@@ -99,4 +106,12 @@ html.dark {
   --color-sidebar-accent-foreground: #111827;
   --color-sidebar-border: #374151;
   --color-sidebar-ring: #60A5FA;
+
+  --color-welcome-background: #0a0a0a;
+  --color-welcome-foreground: #e6e6e6;
+  --color-welcome-secondary: rgba(230, 230, 230, 0.8);
+  --color-welcome-border: #374151;
+  --color-welcome-button: #1d4ed8; /* Darker blue */
+  --color-welcome-button-text: #ffffff;
+  
 }
