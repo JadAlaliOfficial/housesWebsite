@@ -37,22 +37,20 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
   const [currentButtonText, setCurrentButtonText] = useState('');
   const [currentPopupContent, setCurrentPopupContent] = useState('');
 
-  const handleButtonClick = (buttonText: string, popup: string, buttonStatus: string | null) => {
-    // If button_linking status is null, submit directly
-    if (buttonStatus === null) {
+  const handleButtonClick = (buttonText: string, popup: string | null | undefined | 0, buttonStatus: string | null | undefined | "0") => {
+    // If button has no status or user already has status, submit directly
+    if (buttonStatus === null || buttonStatus === undefined || buttonStatus === "0" || user.status !== null) {
       submitAction(buttonText);
       return;
     }
     
-    // If user status is null and button has status, show alert dialog if popup exists
-    if (user.status === null) {
-      if (popup && popup !== 'nothing') {
-        setCurrentButtonText(buttonText);
-        setCurrentPopupContent(popup);
-        setAlertDialogOpen(true);
-      } else {
-        submitAction(buttonText);
-      }
+    // If button has status and user has no status, show popup if it exists
+    if (popup !== null && popup !== undefined && popup !== "0") {
+      setCurrentButtonText(buttonText);
+      setCurrentPopupContent(popup);
+      setAlertDialogOpen(true);
+    } else {
+      submitAction(buttonText);
     }
   };
 
@@ -68,8 +66,8 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
     );
   };
 
-  // Determine if all buttons should be disabled
-  const allButtonsDisabled = user.status !== null;
+  // Buttons are disabled only if user has status or processing is true
+  const allButtonsDisabled = user.status !== null || processing;
 
   return (
     <>
@@ -100,17 +98,12 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
                 {currentStepContent.buttonLinks.map((buttonLink, index) => {
                   // Determine button status text
                   const statusText = 
-                    buttonLink.status === null ? 'Not Requested' : 
+                    buttonLink.status === null || buttonLink.status === undefined || buttonLink.status === "0" ? 'Not Requested' : 
                     user.status === null ? 'Not Requested' : 
                     buttonLink.status;
                   
-                  // Determine if button should be disabled
-                  const isDisabled = 
-                    allButtonsDisabled || 
-                    processing || 
-                    buttonLink.status === 'On Hold' || 
-                    buttonLink.status === 'on hold' || 
-                    buttonLink.status === 'done';
+                  // Button is disabled only if allButtonsDisabled is true
+                  const isDisabled = allButtonsDisabled;
 
                   return (
                     <div className="relative" key={index}>
@@ -148,6 +141,8 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
                 <span
                   className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
                     currentStepContent.buttonLinks[0].status === null || 
+                    currentStepContent.buttonLinks[0].status === undefined ||
+                    currentStepContent.buttonLinks[0].status === "0" || 
                     user.status === null
                       ? 'bg-destructive/10 text-destructive'
                       : currentStepContent.buttonLinks[0].status === 'On Hold' || 
@@ -159,6 +154,8 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
                   }`}
                 >
                   {currentStepContent.buttonLinks[0].status === null || 
+                   currentStepContent.buttonLinks[0].status === undefined ||
+                   currentStepContent.buttonLinks[0].status === "0" || 
                    user.status === null
                     ? 'Not Requested'
                     : currentStepContent.buttonLinks[0].status === 'On Hold' || 

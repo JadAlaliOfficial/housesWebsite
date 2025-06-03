@@ -16,6 +16,14 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Create', href: '/stages/create' },
 ];
 
+const statusOptions = [
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'on-hold', label: 'On Hold' },
+];
+
 const stageFormSchema = z.object({
   order: z.coerce.number().int().min(0, { message: 'Order must be a positive number or zero.' }),
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -24,11 +32,11 @@ const stageFormSchema = z.object({
   description: z.string().optional(),
   button_linking: z.array(
     z.object({
-        text: z.string().min(1, { message: 'Button text is required.' }),
-        popup: z.union([z.string().max(500), z.literal('')]).optional(),
-        status: z.union([z.string(), z.literal('')]).optional(),
+      text: z.string().min(1, { message: 'Button text is required.' }),
+      popup: z.union([z.string().max(500), z.literal('')]).optional(),
+      status: z.union([z.string(), z.literal('')]).optional(),
     })
-).optional(),
+  ).optional(),
   image: z.any().optional(),
 });
 
@@ -58,19 +66,19 @@ export default function StageCreate() {
     formData.append('name', data.name);
     formData.append('title', data.title);
     if (data.subtitle) formData.append('subtitle', data.subtitle);
+    if (data.description) formData.append('description', data.description);
+    
     if (data.button_linking && data.button_linking.length > 0) {
       data.button_linking.forEach((button, index) => {
-          formData.append(`button_linking[${index}][text]`, button.text);
-  
-          if (button.popup) {
-              formData.append(`button_linking[${index}][popup]`, button.popup);
-          }
-  
-          if (button.status) {
-              formData.append(`button_linking[${index}][status]`, button.status);
-          }
+        formData.append(`button_linking[${index}][text]`, button.text);
+        if (button.popup) {
+          formData.append(`button_linking[${index}][popup]`, button.popup);
+        }
+        if (button.status) {
+          formData.append(`button_linking[${index}][status]`, button.status);
+        }
       });
-  }
+    }
 
     const imageInput = document.getElementById('image') as HTMLInputElement;
     if (imageInput?.files?.[0]) {
@@ -201,7 +209,17 @@ export default function StageCreate() {
                           <FormItem>
                             <FormLabel>Status</FormLabel>
                             <FormControl>
-                              <Input placeholder="Active" {...field} />
+                              <select
+                                {...field}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                <option value="">Select status</option>
+                                {statusOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -213,11 +231,13 @@ export default function StageCreate() {
                     </div>
                   ))}
 
-                  {fields.length < 2 && (
-                    <Button type="button" variant="outline" onClick={() => append({ text: '', popup: '', status: '' })}>
-                      Add Button
-                    </Button>
-                  )}
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => append({ text: '', popup: '', status: '' })}
+                  >
+                    Add Button
+                  </Button>
                 </div>
 
                 <div>
