@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import RichTextEditor from '@/components/rich-text-editor';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
@@ -200,10 +201,11 @@ export default function StageEdit({ stage }: EditStageProps) {
                                         <FormItem>
                                             <FormLabel className="dark:text-[#E6E6E6]">Description (Optional)</FormLabel>
                                             <FormControl>
-                                                <Textarea
+                                                <RichTextEditor
+                                                    value={field.value || ''}
+                                                    onChange={field.onChange}
                                                     placeholder="Stage Description"
-                                                    {...field}
-                                                    className="min-h-[100px] dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                    className="min-h-[200px]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -243,11 +245,12 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     <FormItem>
                                                         <FormLabel className="dark:text-[#E6E6E6]">Popup Content</FormLabel>
                                                         <FormControl>
-                                                            <Textarea
+                                                            <RichTextEditor
+                                                                value={field.value || ''}
+                                                                onChange={field.onChange}
                                                                 placeholder="Popup message (max 500 characters)"
-                                                                maxLength={500}
-                                                                {...field}
-                                                                className="min-h-[100px] dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                                height={200}
+                                                                className="dark:border-[#3E3E3A]"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />

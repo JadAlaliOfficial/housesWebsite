@@ -24,23 +24,23 @@ export default function WelcomePageMockup() {
   };
 
   return (
-    <div className="h-1/2 w-full bg-background">
+    <div className="h-1/2 w-full bg-welcome-background">
       {/* Header with logo and buttons */}
       <header className="mb-1 w-full max-w-[1200px] mx-auto">
         <nav className="flex w-full items-center justify-between p-1">
           <div className="flex items-center">
-            <div className="h-12 w-12 bg-primary rounded-md flex items-center justify-center text-white font-bold">
+            <div className="h-12 w-12 bg-primary rounded-md flex items-center justify-center text-foreground font-bold">
               Logo
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="inline-flex items-center gap-2 rounded-sm border border-border px-5 py-1.5 text-sm leading-normal text-foreground opacity-50">
+            <div className="inline-flex items-center gap-2 rounded-sm border border-welcome-border px-5 py-1.5 text-sm leading-normal text-welcome-foreground opacity-50">
               <LogOut className="h-4 w-4" />
               Logout
             </div>
             
-            <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-border text-foreground opacity-50">
+            <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-welcome-border text-foreground opacity-50">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
               </svg>
@@ -50,7 +50,7 @@ export default function WelcomePageMockup() {
       </header>
 
       {/* Stepper */}
-      <div className="sticky top-0 z-10 w-full max-w-[1200px] mx-auto bg-background px-4 py-2">
+      <div className="sticky top-0 z-10 w-full max-w-[1200px] mx-auto bg-welcome-background px-4 py-2">
         <Box sx={{ width: '100%' }}>
           <Stepper
             activeStep={activeStep}
@@ -91,25 +91,25 @@ export default function WelcomePageMockup() {
               animate={{ opacity: 1 }}
               className="text-center"
             >
-              <p className="text-foreground">Image Placeholder</p>
+              <p className="text-welcome-foreground">Image Placeholder</p>
             </motion.div>
           </div>
         </Card>
 
         {/* Content Card */}
-        <Card className="mt-4 flex w-full flex-1 flex-col bg-background p-2 md:mt-0 md:w-1/2 lg:h-auto lg:w-1/2">
+        <Card className="mt-4 flex w-full flex-1 flex-col bg-welcome-background p-2 md:mt-0 md:w-1/2 lg:h-auto lg:w-1/2">
           <CardHeader className="p-0 pb-2">
-            <CardTitle className="text-lg font-semibold text-foreground">
+            <CardTitle className="text-lg font-semibold text-welcome-foreground">
               {currentStepContent.header}
             </CardTitle>
             {currentStepContent.subheader && (
-              <p className="mt-2 text-base font-medium text-foreground/80">
+              <p className="mt-2 text-base font-medium text-welcome-secondary">
                 {currentStepContent.subheader}
               </p>
             )}
           </CardHeader>
           <div className="flex-1 overflow-y-auto">
-            <div className="max-w-none [&>p]:text-foreground">
+            <div className="max-w-none [&>p]:text-welcome-foreground">
               {currentStepContent.content.split('\n').map((paragraph, i) => (
                 <p key={i} className="mb-3 last:mb-0">
                   {paragraph}
@@ -123,7 +123,7 @@ export default function WelcomePageMockup() {
                 <div className="relative flex flex-wrap gap-2">
                   {currentStepContent.buttonLinks.map((buttonLink, index) => (
                     <div className="relative" key={index}>
-                      <div className="inline-flex items-center justify-center rounded-xl bg-primary/50 text-secondary px-4 py-2 text-sm font-medium min-w-[120px] opacity-50">
+                      <div className="inline-flex items-center justify-center rounded-xl bg-welcome-button text-welcome-button-text px-4 py-2 text-sm font-medium min-w-[120px] ">
                         {buttonLink.text}
                       </div>
                     </div>
@@ -132,7 +132,7 @@ export default function WelcomePageMockup() {
 
                 {/* Status display */}
                 <div className="mt-4 flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">Status:</span>
+                  <span className="text-sm font-medium text-welcome-foreground">Status:</span>
                   <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                     Not Requested
                   </span>

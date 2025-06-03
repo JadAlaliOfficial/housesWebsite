@@ -71,19 +71,19 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
 
   return (
     <>
-      <Card className="flex w-full flex-1 flex-col bg-background p-6 md:w-1/2 lg:h-auto lg:w-1/2">
+      <Card className="flex w-full flex-1 flex-col bg-welcome-background p-6 md:w-1/2 lg:h-auto lg:w-1/2">
         <CardHeader className="p-0 pb-4">
-          <CardTitle className="text-lg font-semibold text-foreground">
+          <CardTitle className="text-lg font-semibold text-welcome-foreground">
             {currentStepContent.header}
           </CardTitle>
           {currentStepContent.subheader && (
-            <p className="mt-2 text-base font-medium text-foreground/80">
+            <p className="mt-2 text-base font-medium text-secondary">
               {currentStepContent.subheader}
             </p>
           )}
         </CardHeader>
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-none [&>p]:text-foreground">
+          <div className="max-w-none [&>p]:text-welcome-foreground">
             {currentStepContent.content.split('\n').map((paragraph: string, i: number) => (
               <p key={i} className="mb-3 last:mb-0">
                 {paragraph}
@@ -109,10 +109,10 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
                     <div className="relative" key={index}>
                       <Button
                         ref={index === 0 ? selfButtonRef : index === 1 ? assistedButtonRef : undefined}
-                        className={`min-w-[120px] rounded-xl bg-primary text-secondary ${
+                        className={`min-w-[120px] rounded-xl bg-welcome-button text-welcome-button-text ${
                           isDisabled ? 
                           'cursor-not-allowed opacity-50' : 
-                          'cursor-pointer hover:bg-primary/90'
+                          'cursor-pointer hover:bg-welcome-button/90'
                         }`}
                         disabled={isDisabled}
                         onClick={() => handleButtonClick(
@@ -137,7 +137,7 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
 
               {/* Status display - shows status of first button */}
               <div className="mt-4 flex items-center gap-2">
-                <span className="text-sm font-medium text-foreground">Status:</span>
+                <span className="text-sm font-medium text-welcome-foreground">Status:</span>
                 <span
                   className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
                     currentStepContent.buttonLinks[0].status === null || 
@@ -171,27 +171,33 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
         </div>
       </Card>
 
-      {/* Alert Dialog for confirmation */}
+      {/* Enhanced Alert Dialog for confirmation */}
       <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">
+        <AlertDialogContent className="max-w-2xl p-8 rounded-2xl">
+          <AlertDialogHeader className="mb-6">
+            <AlertDialogTitle className="text-3xl font-bold text-welcome-foreground">
               {currentButtonText}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-secondary">
-              {currentPopupContent}
+            <AlertDialogDescription className="mt-4 text-lg leading-8 text-welcome-secondary">
+              <div className="space-y-4">
+                {currentPopupContent.split('\n\n').map((para, idx) => (
+                  <p key={idx} className="text-balance">
+                    {para}
+                  </p>
+                ))}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogCancel className="px-6 py-3 text-base rounded-xl">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => submitAction(currentButtonText)}
               disabled={processing}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="px-6 py-3 text-base bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
             >
               {processing ? (
                 <div className="flex items-center gap-2">
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                  <LoaderCircle className="h-5 w-5 animate-spin" />
                   <span>Processing...</span>
                 </div>
               ) : (

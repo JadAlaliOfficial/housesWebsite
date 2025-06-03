@@ -9,57 +9,61 @@ export default function StepperSection({ activeStep, steps }: StepperSectionProp
     const isFinalStep = activeStep === steps.length - 1;
     
     return (
-        <div className="sticky top-0 z-10 w-full max-w-[1200px] bg-background px-4 py-4 dark:bg-background">
+        <div className="sticky top-0 z-10 w-full max-w-[1200px] bg-welcome-background px-4 py-4 dark:bg-welcome-background">
             <Box sx={{ width: '100%' }}>
-            <Stepper
-    activeStep={activeStep}
-    orientation="horizontal"
-    sx={{
-        '& .MuiStepConnector-root': {
-            top: 12,
-        },
-        '& .MuiStepConnector-line': {
-            borderColor: 'transparent', // Removed border
-        },
-        'html.dark & .MuiStepConnector-line': {
-            borderColor: 'transparent', // Removed border
-        },
-        '& .Mui-completed .MuiStepConnector-line': {
-            borderColor: 'transparent', // Removed border
-        },
-        '& .MuiStepLabel-root': {
-            '& .MuiStepLabel-label': {
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                color: 'var(--color-foreground)',
-                '@media (max-width: 1024px)': {
-                    display: 'none',
-                },
-            },
-            '&.Mui-completed .MuiStepLabel-label': {
-                color: 'var(--color-foreground) !important',
-            },
-            '&.Mui-active .MuiStepLabel-label': {
-                color: 'var(--color-foreground) !important',
-            },
-        },
-        // Dark mode styles using project's dark class
-        'html.dark &': {
-            '& .MuiStepLabel-root': {
-                '& .MuiStepLabel-label': {
-                    color: 'var(--color-foreground)',
-                },
-                '&.Mui-completed .MuiStepLabel-label': {
-                    color: 'var(--color-foreground) !important',
-                },
-            },
-            '& .MuiStepConnector-line': {
-                borderColor: 'transparent',
-            },
-        },
-        backgroundColor: 'var(--color-background)',
-    }}
->
+                <Stepper
+                    activeStep={activeStep}
+                    orientation="horizontal"
+                    sx={{
+                        '& .MuiStepConnector-root': {
+                            top: 12,
+                        },
+                        '& .MuiStepConnector-line': {
+                            borderColor: 'var(--color-welcome-foreground)',
+                            opacity: 0.3,
+                        },
+                        '& .Mui-completed .MuiStepConnector-line': {
+                            borderColor: 'var(--color-welcome-foreground)',
+                            opacity: 1,
+                        },
+                        '& .MuiStepLabel-root': {
+                            '& .MuiStepLabel-label': {
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                color: 'var(--color-welcome-foreground)',
+                                '@media (max-width: 1024px)': {
+                                    display: 'none',
+                                },
+                            },
+                            '&.Mui-completed .MuiStepLabel-label': {
+                                color: 'var(--color-welcome-foreground) !important',
+                            },
+                            '&.Mui-active .MuiStepLabel-label': {
+                                color: 'var(--color-welcome-foreground) !important',
+                            },
+                        },
+                        // Dark mode styles
+                        'html.dark &': {
+                            '& .MuiStepConnector-line': {
+                                borderColor: 'var(--color-welcome-foreground)',
+                                opacity: 0.3,
+                            },
+                            '& .Mui-completed .MuiStepConnector-line': {
+                                borderColor: 'var(--color-welcome-foreground)',
+                                opacity: 1,
+                            },
+                            '& .MuiStepLabel-root': {
+                                '& .MuiStepLabel-label': {
+                                    color: 'var(--color-welcome-foreground)',
+                                },
+                                '&.Mui-completed .MuiStepLabel-label': {
+                                    color: 'var(--color-welcome-foreground) !important',
+                                },
+                            },
+                        },
+                        backgroundColor: 'var(--color-welcome-background)',
+                    }}
+                >
                     {steps.map((stepItem, index) => (
                         <Step 
                             key={stepItem.label} 

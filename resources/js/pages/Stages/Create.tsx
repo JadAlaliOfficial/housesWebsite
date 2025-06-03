@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import RichTextEditor from '@/components/rich-text-editor';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
@@ -164,7 +165,12 @@ export default function StageCreate() {
                     <FormItem>
                       <FormLabel>Description (Optional)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Stage Description" {...field} rows={4} />
+                        <RichTextEditor
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder="Stage Description"
+                          className="min-h-[200px]"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -196,7 +202,12 @@ export default function StageCreate() {
                           <FormItem>
                             <FormLabel>Popup Content</FormLabel>
                             <FormControl>
-                              <Textarea placeholder="Popup message (max 500 characters)" maxLength={500} {...field} />
+                              <RichTextEditor
+                                value={field.value || ''}
+                                onChange={field.onChange}
+                                placeholder="Popup message (max 500 characters)"
+                                height={200}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
