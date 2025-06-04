@@ -131,7 +131,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                         type="number"
                                                         placeholder="0"
                                                         {...field}
-                                                        className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                        className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -148,7 +148,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     <Input
                                                         placeholder="Stage Name"
                                                         {...field}
-                                                        className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                        className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -167,7 +167,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 <Input
                                                     placeholder="Stage Title"
                                                     {...field}
-                                                    className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -185,7 +185,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 <Input
                                                     placeholder="Stage Subtitle"
                                                     {...field}
-                                                    className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -204,7 +204,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     name={field.name}
                                                     value={field.value || ''}
                                                     onChange={(content) => form.setValue('description', content)}
-                                                    className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -230,7 +230,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                             <Input
                                                                 placeholder="Click Here"
                                                                 {...field}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -248,7 +248,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                                 name={field.name}
                                                                 value={field.value || ''}
                                                                 onChange={(content) => form.setValue(`button_linking.${index}.popup`, content)}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
+                                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -263,7 +263,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                         <FormLabel>Status</FormLabel>
                                                         <FormControl>
                                                             <>
-                                                                <Input placeholder="null" list="status-suggestions" {...field} />
+                                                                <Input className='border-[#3E3E3A]' placeholder="null" list="status-suggestions" {...field} />
                                                                 <datalist id="status-suggestions">
                                                                     <option value="on hold" />
                                                                 </datalist>
@@ -283,7 +283,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                         type="button"
                                         variant="outline"
                                         onClick={() => append({ text: '', popup: '', status: '' })}
-                                        className="dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
+                                        className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
                                     >
                                         Add Button
                                     </Button>
@@ -298,7 +298,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 <img
                                                     src={`/storage/${stage.image}`}
                                                     alt={stage.name}
-                                                    className="max-h-[200px] rounded-md border dark:border-[#3E3E3A]"
+                                                    className="max-h-[200px] rounded-md border border-[#3E3E3A]"
                                                 />
                                             </div>
                                         )}
@@ -306,7 +306,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                             id="image"
                                             type="file"
                                             accept="image/*"
-                                            className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                            className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                         />
                                         <p className="text-xs text-gray-500 dark:text-gray-400">Supported formats: JPG, PNG, GIF. Max size: 2MB.</p>
                                     </div>
@@ -317,7 +317,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                         type="button"
                                         variant="outline"
                                         onClick={() => router.visit(route('stages.index'))}
-                                        className="dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                        className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
                                     >
                                         Cancel
                                     </Button>

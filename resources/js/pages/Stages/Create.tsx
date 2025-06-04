@@ -94,7 +94,7 @@ export default function StageCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Stage" />
             <div className="flex h-full flex-1 flex-col gap-4 bg-[#E6E6E6] p-4 text-[#0a0a0a] dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">
-                <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212]">
+                <Card className="bg-white border-[#3E3E3A] dark:bg-[#121212]">
                     <CardHeader>
                         <CardTitle className="text-xl font-bold">Create New Stage</CardTitle>
                         <CardDescription className="dark:text-gray-300">Add a new stage to the house building process</CardDescription>
@@ -110,7 +110,7 @@ export default function StageCreate() {
                                             <FormItem>
                                                 <FormLabel>Order</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" placeholder="0" {...field} />
+                                                    <Input className='border-[#3E3E3A]' type="number" placeholder="0" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -123,7 +123,7 @@ export default function StageCreate() {
                                             <FormItem>
                                                 <FormLabel>Name</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Stage Name" {...field} />
+                                                    <Input className='border-[#3E3E3A]' placeholder="Stage Name" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -138,7 +138,7 @@ export default function StageCreate() {
                                         <FormItem>
                                             <FormLabel>Title</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Stage Title" {...field} />
+                                                <Input className='border-[#3E3E3A]' placeholder="Stage Title" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -152,7 +152,7 @@ export default function StageCreate() {
                                         <FormItem>
                                             <FormLabel>Subtitle (Optional)</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Stage Subtitle" {...field} />
+                                                <Input className='border-[#3E3E3A]' placeholder="Stage Subtitle" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -170,7 +170,7 @@ export default function StageCreate() {
                                                     name={field.name}
                                                     value={field.value || ''}
                                                     onChange={(content) => form.setValue('description', content)}
-                                                    className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -190,7 +190,7 @@ export default function StageCreate() {
                                                     <FormItem>
                                                         <FormLabel>Button Text</FormLabel>
                                                         <FormControl>
-                                                            <Input placeholder="Click Here" {...field} />
+                                                            <Input className='border-[#3E3E3A]' placeholder="Click Here" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -207,7 +207,7 @@ export default function StageCreate() {
                                                                 name={field.name}
                                                                 value={field.value || ''}
                                                                 onChange={(content) => form.setValue(`button_linking.${index}.popup`, content)}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
+                                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -222,7 +222,7 @@ export default function StageCreate() {
                                                         <FormLabel>Status</FormLabel>
                                                         <FormControl>
                                                             <>
-                                                                <Input placeholder="null" list="status-suggestions" {...field} />
+                                                                <Input className='border-[#3E3E3A]' placeholder="null" list="status-suggestions" {...field} />
                                                                 <datalist id="status-suggestions">
                                                                     <option value="on hold" />
                                                                 </datalist>
@@ -246,7 +246,7 @@ export default function StageCreate() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
+                                        className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
                                         onClick={() => append({ text: '', popup: '', status: '' })}
                                     >
                                         Add Button
@@ -255,7 +255,7 @@ export default function StageCreate() {
 
                                 <div>
                                     <FormLabel>Image (Optional)</FormLabel>
-                                    <Input id="image" type="file" accept="image/*" />
+                                    <Input className='border-[#3E3E3A]' id="image" type="file" accept="image/*" />
                                 </div>
 
                                 <div className="flex justify-end space-x-2 pt-4">
