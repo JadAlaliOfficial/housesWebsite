@@ -25,7 +25,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
-            [{ list: 'ordered' }, { list: 'bullet' }],
+            // [{ list: 'ordered' }, { list: 'bullet' }],
             ['clean']
           ]
         }

@@ -86,7 +86,7 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
           <div 
             className="max-w-none text-welcome-foreground prose dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: currentStepContent.content }}
-          />
+          /> 
         </div>
         <div className="pt-4">
           {currentStepContent.buttonLinks?.length > 0 && (
@@ -169,9 +169,9 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
       </Card>
 
       {/* Enhanced Alert Dialog for confirmation */}
-      <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
-        <AlertDialogContent className="max-w-2xl max-h-3/4 overflow-auto p-8 rounded-2xl">
-          <AlertDialogHeader className="mb-6">
+      <AlertDialog  open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+        <AlertDialogContent className="bg-welcome-background text-welcome-foreground max-w-2xl max-h-3/4 overflow-auto p-8 rounded-2xl">
+          <AlertDialogHeader className="bg-welcome-background mb-6">
             <AlertDialogTitle className="text-3xl font-bold text-welcome-foreground">
               {currentButtonText}
             </AlertDialogTitle>

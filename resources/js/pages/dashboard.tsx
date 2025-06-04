@@ -69,6 +69,9 @@ export default function Dashboard({ users, stages }: DashboardProps) {
         defaultValues: { stage: stages[0]?.order ?? 0 },
     });
 
+    // Determine the order of the last stage
+    const lastStageOrder = stages.length > 0 ? Math.max(...stages.map(s => s.order)) : 0;
+
     const onCreateSubmit = (data: z.infer<typeof userFormSchema>) =>
         router.post(route('users.store'), data, {
             onSuccess: () => {
@@ -174,7 +177,7 @@ export default function Dashboard({ users, stages }: DashboardProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 bg-[#E6E6E6] p-4 text-[#0a0a0a] dark:bg-[#0a0a0a] dark:text-[#E6E6E6]">
-                <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212]">
+                <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212] pb-0">
                     <CardHeader className="flex justify-between">
                         <div>
                             <CardTitle className="text-xl font-bold">Users Management</CardTitle>
@@ -290,8 +293,8 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                         </div>
                     </CardHeader>
 
-                    <CardContent>
-                        <Table>
+                    <CardContent >
+                        <Table >
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>ID</TableHead>
@@ -303,14 +306,39 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody>
+                            <TableBody >
                                 {users.map((user) => (
-                                    <TableRow key={user.id}>
+                                    <TableRow key={user.id} >
                                         <TableCell>{user.id}</TableCell>
                                         <TableCell>{user.name}</TableCell>
                                         <TableCell>{user.email}</TableCell>
                                         <TableCell>{getStageNameFromValue(user.stage, stages)}</TableCell>
-                                        <TableCell>{user.status ?? 'Not Requested'}</TableCell>
+                                        <TableCell
+                                            className={(() => {
+                                                const userStageOrder = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
+                                                let statusText: string = (user.status as string) ?? 'Not Requested';
+
+                                                if (lastStageOrder > 0 && userStageOrder === lastStageOrder) {
+                                                    statusText = 'done';
+                                                }
+
+                                                if (statusText === 'done') return 'text-green-600  font-medium';
+                                                if (statusText === 'on hold') return 'text-yellow-500  font-medium';
+                                                if (statusText === 'Not Requested' || statusText === 'not requested') return 'text-red-600  font-medium';
+                                                return '';
+                                            })()}
+                                        >
+                                            {(() => {
+                                                const userStageOrder = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
+                                                let statusText: string = (user.status as string) ?? 'Not Requested';
+
+                                                if (lastStageOrder > 0 && userStageOrder === lastStageOrder) {
+                                                    statusText = 'done';
+                                                }
+                                                // Normalize display for 'not requested' to 'Not Requested'
+                                                return statusText === 'not requested' ? 'Not Requested' : statusText;
+                                            })()}
+                                        </TableCell>
                                         <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                                         <TableCell className="space-x-1 text-right">
                                             <Button variant="ghost" size="sm" onClick={() => handleMoveToNextStage(user)}>

@@ -14,18 +14,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         User::factory()->create([
             'name' => 'Jad',
             'email' => 'Jad@example.com',
             'password' => 'password',
             'stage' => 0,
         ]);
+
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'stage' => 1,
+        ]);
+
+        
         $this->call(\Database\Seeders\ThemeSettingsSeeder::class);
 
     }

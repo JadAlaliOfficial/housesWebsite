@@ -133,7 +133,7 @@ export default function WelcomePageMockup() {
                 {/* Status display */}
                 <div className="mt-4 flex items-center gap-2">
                   <span className="text-sm font-medium text-welcome-foreground">Status:</span>
-                  <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                  <span className="inline-flex items-center rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
                     Not Requested
                   </span>
                 </div>
