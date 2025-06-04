@@ -82,7 +82,7 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
             </p>
           )}
         </CardHeader>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-scroll">
           <div 
             className="max-w-none text-welcome-foreground prose dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: currentStepContent.content }}
