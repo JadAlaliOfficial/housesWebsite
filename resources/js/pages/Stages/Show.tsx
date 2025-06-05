@@ -80,6 +80,27 @@ export default function StageShow({ stage }: ShowStageProps) {
           </Card>
         )}
 
+        {/* Card for Email Details */}
+        {(stage.email_subject || stage.email_content) && (
+          <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212]">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Email Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {stage.email_subject && <Detail label="Email Subject" value={stage.email_subject} />}
+              {stage.email_content && (
+                <div>
+                  <span className="font-medium dark:text-gray-300">Email Content:</span>
+                  <div
+                    className="mt-1 max-w-none text-welcome-foreground prose dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: stage.email_content }}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Card 4: Button Linking */}
         {stage.button_linking?.length > 0 && (
           <Card className="bg-white dark:border-[#3E3E3A] dark:bg-[#121212]">

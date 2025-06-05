@@ -30,6 +30,8 @@ const stageFormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 2 characters.' }),
     subtitle: z.string().optional(),
     description: z.string().optional(),
+    email_subject: z.string().optional(), // Added email_subject
+    email_content: z.string().optional(), // Added email_content
     button_linking: z
         .array(
             z.object({
@@ -53,6 +55,8 @@ export default function StageCreate() {
             title: '',
             subtitle: '',
             description: '',
+            email_subject: '', // Added email_subject
+            email_content: '', // Added email_content
             button_linking: [],
         },
     });
@@ -69,6 +73,8 @@ export default function StageCreate() {
         formData.append('title', data.title);
         if (data.subtitle) formData.append('subtitle', data.subtitle);
         if (data.description) formData.append('description', data.description);
+        if (data.email_subject) formData.append('email_subject', data.email_subject); // Added email_subject
+        if (data.email_content) formData.append('email_content', data.email_content); // Added email_content
 
         if (data.button_linking && data.button_linking.length > 0) {
             data.button_linking.forEach((button, index) => {
@@ -177,6 +183,41 @@ export default function StageCreate() {
                                         </FormItem>
                                     )}
                                 />
+
+                            {/* Email Subject Field */}
+                            <FormField
+                                control={form.control}
+                                name="email_subject"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email Subject (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Input className='border-[#3E3E3A]' placeholder="Enter email subject" {...field} value={field.value ?? ''} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Email Content Field */}
+                            <FormField
+                                control={form.control}
+                                name="email_content"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email Content (Optional)</FormLabel>
+                                        <FormControl>
+                                            <QuillEditor
+                                                name={field.name} // Added missing name prop
+                                                value={field.value ?? ''}
+                                                onChange={(value) => form.setValue('email_content', value)}
+                                                className='border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]'
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                                 <div className="flex flex-col space-y-4">
                                     <FormLabel>Buttons (Optional)</FormLabel>

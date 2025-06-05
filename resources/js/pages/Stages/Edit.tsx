@@ -43,6 +43,8 @@ const stageFormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 2 characters.' }),
     subtitle: z.string().optional(),
     description: z.string().optional(),
+    email_subject: z.string().optional(), // Added email_subject
+    email_content: z.string().optional(), // Added email_content
     button_linking: z
         .array(
             z.object({
@@ -66,7 +68,9 @@ export default function StageEdit({ stage }: EditStageProps) {
             title: stage.title,
             subtitle: stage.subtitle || '',
             description: stage.description || '',
-            button_linking: stage.button_linking || [],
+            email_subject: stage.email_subject || '', // Added email_subject
+            email_content: stage.email_content || '', // Added email_content
+            button_linking: stage.button_linking ? JSON.parse(stage.button_linking) : [], // Parse button_linking if it exists
         },
     });
 
@@ -84,6 +88,8 @@ export default function StageEdit({ stage }: EditStageProps) {
 
         if (data.subtitle) formData.append('subtitle', data.subtitle);
         if (data.description) formData.append('description', data.description);
+        if (data.email_subject) formData.append('email_subject', data.email_subject); // Added email_subject
+        if (data.email_content) formData.append('email_content', data.email_content); // Added email_content
 
         if (data.button_linking && data.button_linking.length > 0) {
             data.button_linking.forEach((button, index) => {
@@ -205,6 +211,39 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     value={field.value || ''}
                                                     onChange={(content) => form.setValue('description', content)}
                                                     className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="email_subject"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email Subject (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input className='border-[#3E3E3A]' placeholder="Enter email subject" {...field} value={field.value ?? ''} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="email_content"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email Content (Optional)</FormLabel>
+                                            <FormControl>
+                                                <QuillEditor
+                                                    name={field.name}
+                                                    value={field.value ?? ''}
+                                                    onChange={(value) => form.setValue('email_content', value)}
+                                                    className='border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]'
                                                 />
                                             </FormControl>
                                             <FormMessage />

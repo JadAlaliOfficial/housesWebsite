@@ -53,6 +53,8 @@ export interface Stage {
     description?: string;
     button_linking?: string; // JSON string that needs to be parsed
     image?: string;
+    email_subject?: string;
+    email_content?: string;
     created_at: string;
     updated_at: string;
 }
