@@ -18,6 +18,35 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
+  const transformLists = (html: string): string => {
+    if (!html) return html;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Process ordered lists
+    const olElements = doc.querySelectorAll('ol');
+    olElements.forEach(ol => {
+      ol.className = 'list-decimal pl-5 my-4';
+      const liElements = ol.querySelectorAll('li');
+      liElements.forEach((li, index) => {
+        li.className = index === liElements.length - 1 ? '' : 'mb-2';
+      });
+    });
+    
+    // Process unordered lists
+    const ulElements = doc.querySelectorAll('ul');
+    ulElements.forEach(ul => {
+      ul.className = 'list-disc pl-5 my-4';
+      const liElements = ul.querySelectorAll('li');
+      liElements.forEach((li, index) => {
+        li.className = index === liElements.length - 1 ? '' : 'mb-2';
+      });
+    });
+
+    return doc.body.innerHTML;
+  };
+
   useEffect(() => {
     if (editorRef.current && !quillRef.current) {
       quillRef.current = new Quill(editorRef.current, {
@@ -25,7 +54,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
-            // [{ list: 'ordered' }, { list: 'bullet' }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
             ['clean']
           ]
         }
@@ -33,18 +62,21 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
 
       quillRef.current.on('text-change', () => {
         const content = quillRef.current?.root.innerHTML || '';
-        onChange(content);
+        const transformedContent = transformLists(content);
+        onChange(transformedContent);
       });
 
       if (value) {
-        quillRef.current.root.innerHTML = value;
+        const transformedValue = transformLists(value);
+        quillRef.current.root.innerHTML = transformedValue;
       }
     }
   }, []);
 
   useEffect(() => {
     if (quillRef.current && value !== quillRef.current.root.innerHTML) {
-      quillRef.current.root.innerHTML = value;
+      const transformedValue = transformLists(value);
+      quillRef.current.root.innerHTML = transformedValue;
     }
   }, [value]);
 

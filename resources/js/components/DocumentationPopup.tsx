@@ -279,6 +279,7 @@ export function DocumentationPopup({ isOpen, onClose }: DocumentationPopupProps)
                         </ScrollArea>
                     </TabsContent>
                 </Tabs>
+                
                 <DialogFooter>
                     <Button 
                         onClick={onClose}

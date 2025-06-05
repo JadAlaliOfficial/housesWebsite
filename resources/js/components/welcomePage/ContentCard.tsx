@@ -175,7 +175,7 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
             <AlertDialogTitle className="text-3xl font-bold text-welcome-foreground">
               {currentButtonText}
             </AlertDialogTitle>
-            <AlertDialogDescription className="mt-4 text-lg leading-8 text-welcome-secondary prose dark:prose-invert">
+            <AlertDialogDescription className="mt-4 text-lg leading-8 prose dark:prose-invert">
               <div dangerouslySetInnerHTML={{ __html: currentPopupContent }} />
             </AlertDialogDescription>
           </AlertDialogHeader>

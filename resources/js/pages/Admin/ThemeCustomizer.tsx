@@ -132,6 +132,9 @@ export default function ThemeCustomizer() {
                         </form>
                     </CardContent>
                 </Card>
+                <footer className="mt-auto py-2 text-center text-xl text-gray-500 dark:text-gray-400 font-light font-alumni">
+                MADE <span className='ml-2'>WITH</span> <span className='ml-2'>LOVE</span> <span className='ml-2'>BY</span> <span className='ml-2'>-R&D-</span> 
+                </footer>
             </div>
         </AppLayout>
     );
