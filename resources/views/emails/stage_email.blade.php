@@ -15,7 +15,7 @@
             line-height: 1.5;
         }
         .email-container {
-            max-width: 600px;
+            max-width: 700px; /* Increased from 600px to 700px */
             margin: 0 auto;
             background-color: #ffffff;
         }
