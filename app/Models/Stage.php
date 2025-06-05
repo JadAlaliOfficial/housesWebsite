@@ -13,6 +13,8 @@ class Stage extends Model
         'subtitle',
         'description',
         'button_linking',
-        'image'
+        'image',
+        'email_subject',
+        'email_content',
     ];
 }

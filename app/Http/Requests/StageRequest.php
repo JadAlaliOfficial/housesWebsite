@@ -27,6 +27,8 @@ class StageRequest extends FormRequest
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'email_subject' =>'nullable|string|max:255',
+            'email_content' => 'nullable|string',
             'button_linking' => 'nullable|array',
             'button_linking.*.text' => 'required_with:button_linking|string|max:255',
             'button_linking.*.popup' => 'string|max:500',
