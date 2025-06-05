@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Stage } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {useState} from 'react';
 import { Head, router } from '@inertiajs/react';
 import { useFieldArray, useForm as useHookForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -70,7 +71,7 @@ export default function StageEdit({ stage }: EditStageProps) {
             description: stage.description || '',
             email_subject: stage.email_subject || '', // Added email_subject
             email_content: stage.email_content || '', // Added email_content
-            button_linking: stage.button_linking ? JSON.parse(stage.button_linking) : [], // Parse button_linking if it exists
+            button_linking: typeof stage.button_linking === 'string' ? JSON.parse(stage.button_linking) : (stage.button_linking || []),
         },
     });
 
@@ -79,17 +80,29 @@ export default function StageEdit({ stage }: EditStageProps) {
         name: 'button_linking',
     });
 
+    // Add this state to track if the image should be removed
+    const [removeImage, setRemoveImage] = useState(false);
+    
     const onSubmit = (data: StageFormValues) => {
+        // Clean up description, email_content, and button_linking popups
+        if (data.description === '<p><br></p>') {
+            data.description = '';
+        }
+
+        if (data.email_content === '<p><br></p>') {
+            data.email_content = '';
+        }
+
         const formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('order', data.order.toString());
         formData.append('name', data.name);
         formData.append('title', data.title);
 
-        if (data.subtitle) formData.append('subtitle', data.subtitle);
-        if (data.description) formData.append('description', data.description);
-        if (data.email_subject) formData.append('email_subject', data.email_subject); // Added email_subject
-        if (data.email_content) formData.append('email_content', data.email_content); // Added email_content
+        formData.append('subtitle', data.subtitle ?? ''); // Always send subtitle, even if empty
+        formData.append('description', data.description ?? '');
+        formData.append('email_subject', data.email_subject ?? ''); // Added email_subject
+        formData.append('email_content', data.email_content ?? ''); // Added email_content
 
         if (data.button_linking && data.button_linking.length > 0) {
             data.button_linking.forEach((button, index) => {
@@ -101,11 +114,20 @@ export default function StageEdit({ stage }: EditStageProps) {
                     formData.append(`button_linking[${index}][status]`, button.status);
                 }
             });
+        } else {
+            // If button_linking is undefined or an empty array,
+            // send '[]' to signal the backend to clear all buttons.
+            formData.append('button_linking', '');
         }
 
-        const imageInput = document.getElementById('image') as HTMLInputElement;
-        if (imageInput?.files?.[0]) {
-            formData.append('image', imageInput.files[0]);
+        // Add this condition to handle image removal
+        if (removeImage) {
+            formData.append('image', '');
+        } else {
+            const imageInput = document.getElementById('image') as HTMLInputElement;
+            if (imageInput?.files?.[0]) {
+                formData.append('image', imageInput.files[0]);
+            }
         }
 
         router.post(route('stages.update', stage.id), formData, {
@@ -331,9 +353,19 @@ export default function StageEdit({ stage }: EditStageProps) {
                                 <div className="space-y-2">
                                     <FormLabel className="dark:text-[#E6E6E6]">Image (Optional)</FormLabel>
                                     <div className="flex flex-col gap-4">
-                                        {stage.image && (
+                                        {stage.image && !removeImage && (
                                             <div className="mb-2">
-                                                <p className="mb-2 text-sm dark:text-gray-300">Current Image:</p>
+                                                <div className="flex items-center justify-between">
+                                                    <p className="mb-2 text-sm dark:text-gray-300">Current Image:</p>
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="destructive" 
+                                                        onClick={() => setRemoveImage(true)}
+                                                        className="h-8 px-3 text-xs"
+                                                    >
+                                                        Remove Image
+                                                    </Button>
+                                                </div>
                                                 <img
                                                     src={`/storage/${stage.image}`}
                                                     alt={stage.name}
@@ -341,12 +373,14 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 />
                                             </div>
                                         )}
-                                        <Input
-                                            id="image"
-                                            type="file"
-                                            accept="image/*"
-                                            className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                        />
+                                        {(removeImage || !stage.image) && (
+                                            <Input
+                                                id="image"
+                                                type="file"
+                                                accept="image/*"
+                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                            />
+                                        )}
                                         <p className="text-xs text-gray-500 dark:text-gray-400">Supported formats: JPG, PNG, GIF. Max size: 2MB.</p>
                                     </div>
                                 </div>
@@ -368,8 +402,8 @@ export default function StageEdit({ stage }: EditStageProps) {
                         </Form>
                     </CardContent>
                 </Card>
-                <footer className="mt-auto py-2 text-center text-xl text-gray-500 dark:text-gray-400 font-light font-alumni">
-                MADE <span className='ml-2'>WITH</span> <span className='ml-2'>LOVE</span> <span className='ml-2'>BY</span> <span className='ml-2'>-R&D-</span> 
+                <footer className="mt-auto py-2 text-center text-lg text-gray-500 dark:text-gray-400 font-light font-roboto">
+                MADE WITH ❤️ BY -R&D- 
                 </footer>
             </div>
         </AppLayout>
