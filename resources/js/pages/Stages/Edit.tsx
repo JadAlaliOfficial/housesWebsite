@@ -1,9 +1,8 @@
+import QuillEditor from '@/components/QuillEditor'; // Added QuillEditor import
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import RichTextEditor from '@/components/rich-text-editor';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Stage } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -132,7 +131,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                         type="number"
                                                         placeholder="0"
                                                         {...field}
-                                                        className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                        className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -149,7 +148,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     <Input
                                                         placeholder="Stage Name"
                                                         {...field}
-                                                        className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                        className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -168,7 +167,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 <Input
                                                     placeholder="Stage Title"
                                                     {...field}
-                                                    className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -186,7 +185,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 <Input
                                                     placeholder="Stage Subtitle"
                                                     {...field}
-                                                    className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -201,11 +200,11 @@ export default function StageEdit({ stage }: EditStageProps) {
                                         <FormItem>
                                             <FormLabel className="dark:text-[#E6E6E6]">Description (Optional)</FormLabel>
                                             <FormControl>
-                                                <RichTextEditor
+                                                <QuillEditor
+                                                    name={field.name}
                                                     value={field.value || ''}
-                                                    onChange={field.onChange}
-                                                    placeholder="Stage Description"
-                                                    className="min-h-[200px]"
+                                                    onChange={(content) => form.setValue('description', content)}
+                                                    className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -213,13 +212,13 @@ export default function StageEdit({ stage }: EditStageProps) {
                                     )}
                                 />
 
-                                <div className="space-y-2">
+                                <div className="flex flex-col space-y-2">
                                     <FormLabel className="dark:text-[#E6E6E6]">Buttons (Optional)</FormLabel>
 
                                     {fields.map((field, index) => (
                                         <div
                                             key={field.id}
-                                            className="grid grid-cols-1 gap-4 rounded-md border p-4 md:grid-cols-2 dark:border-[#3E3E3A]"
+                                            className="grid grid-cols-1 gap-4 rounded-md border p-4"
                                         >
                                             <FormField
                                                 control={form.control}
@@ -231,7 +230,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                             <Input
                                                                 placeholder="Click Here"
                                                                 {...field}
-                                                                className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -242,15 +241,14 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 control={form.control}
                                                 name={`button_linking.${index}.popup`}
                                                 render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="dark:text-[#E6E6E6]">Popup Content</FormLabel>
+                                                    <FormItem >
+                                                        <FormLabel className="dark:text-[#E6E6E6]">Popup Content (Optional)</FormLabel>
                                                         <FormControl>
-                                                            <RichTextEditor
+                                                            <QuillEditor
+                                                                name={field.name}
                                                                 value={field.value || ''}
-                                                                onChange={field.onChange}
-                                                                placeholder="Popup message (max 500 characters)"
-                                                                height={200}
-                                                                className="dark:border-[#3E3E3A]"
+                                                                onChange={(content) => form.setValue(`button_linking.${index}.popup`, content)}
+                                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6] dark:placeholder:text-[#62605b]"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -265,7 +263,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                         <FormLabel>Status</FormLabel>
                                                         <FormControl>
                                                             <>
-                                                                <Input placeholder="null" list="status-suggestions" {...field} />
+                                                                <Input className='border-[#3E3E3A]' placeholder="null" list="status-suggestions" {...field} />
                                                                 <datalist id="status-suggestions">
                                                                     <option value="on hold" />
                                                                 </datalist>
@@ -275,7 +273,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     </FormItem>
                                                 )}
                                             />
-                                            <Button type="button" variant="destructive" onClick={() => remove(index)} className="md:col-span-1">
+                                            <Button type="button" variant="destructive" onClick={() => remove(index)} className=" w-1/4 justify-self-start">
                                                 Remove Button
                                             </Button>
                                         </div>
@@ -285,7 +283,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                         type="button"
                                         variant="outline"
                                         onClick={() => append({ text: '', popup: '', status: '' })}
-                                        className="dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                        className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
                                     >
                                         Add Button
                                     </Button>
@@ -300,7 +298,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                 <img
                                                     src={`/storage/${stage.image}`}
                                                     alt={stage.name}
-                                                    className="max-h-[200px] rounded-md border dark:border-[#3E3E3A]"
+                                                    className="max-h-[200px] rounded-md border border-[#3E3E3A]"
                                                 />
                                             </div>
                                         )}
@@ -308,7 +306,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                             id="image"
                                             type="file"
                                             accept="image/*"
-                                            className="dark:border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                            className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
                                         />
                                         <p className="text-xs text-gray-500 dark:text-gray-400">Supported formats: JPG, PNG, GIF. Max size: 2MB.</p>
                                     </div>
@@ -319,7 +317,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                         type="button"
                                         variant="outline"
                                         onClick={() => router.visit(route('stages.index'))}
-                                        className="dark:border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                        className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
                                     >
                                         Cancel
                                     </Button>
@@ -331,6 +329,9 @@ export default function StageEdit({ stage }: EditStageProps) {
                         </Form>
                     </CardContent>
                 </Card>
+                <footer className="mt-auto py-2 text-center text-xl text-gray-500 dark:text-gray-400 font-light font-alumni">
+                MADE <span className='ml-2'>WITH</span> <span className='ml-2'>LOVE</span> <span className='ml-2'>BY</span> <span className='ml-2'>-R&D-</span> 
+                </footer>
             </div>
         </AppLayout>
     );

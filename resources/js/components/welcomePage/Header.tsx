@@ -44,7 +44,7 @@ export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) 
                                 href={route('logout')}
                                 method="post"
                                 as="button"
-                                className="inline-flex items-center gap-2 rounded-sm border border-welcome-border px-5 py-1.5 text-sm leading-normal text-welcome-foreground hover:border-welcome-border dark:border-welcome-border dark:text-[#E6E6E6] dark:hover:border-[#62605b]"
+                                className="inline-flex items-center gap-2 rounded-sm border border-welcome-border px-5 py-1.5 text-sm leading-normal text-welcome-foreground hover:border-welcome-border dark:border-welcome-border dark:text-welcome-foreground dark:hover:border-welcome-border"
                             >
                                 <LogOut className="h-4 w-4" />
                                 Logout

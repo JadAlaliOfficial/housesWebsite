@@ -24,12 +24,12 @@ export default function WelcomePageMockup() {
   };
 
   return (
-    <div className="h-1/2 w-full bg-welcome-background">
+    <div className="h-1/2 w-full bg-welcome-background rounded-xl p-2">
       {/* Header with logo and buttons */}
       <header className="mb-1 w-full max-w-[1200px] mx-auto">
         <nav className="flex w-full items-center justify-between p-1">
           <div className="flex items-center">
-            <div className="h-12 w-12 bg-primary rounded-md flex items-center justify-center text-foreground font-bold">
+            <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center text-foreground font-bold">
               Logo
             </div>
           </div>
@@ -62,14 +62,14 @@ export default function WelcomePageMockup() {
                 '& .MuiStepLabel-label': {
                   fontSize: '0.875rem',
                   fontWeight: 500,
-                  color: 'var(--color-foreground)',
+                  color: 'var(--color-welcome-foreground)',
                   '@media (max-width: 1024px)': { display: 'none' },
                 },
                 '&.Mui-completed .MuiStepLabel-label, &.Mui-active .MuiStepLabel-label': {
-                  color: 'var(--color-foreground) !important',
+                  color: 'var(--color-welcome-foreground) !important',
                 },
               },
-              backgroundColor: 'var(--color-background)',
+              backgroundColor: 'var(--color-welcome-background)',
             }}
           >
             {steps.map((stepItem) => (
@@ -133,7 +133,7 @@ export default function WelcomePageMockup() {
                 {/* Status display */}
                 <div className="mt-4 flex items-center gap-2">
                   <span className="text-sm font-medium text-welcome-foreground">Status:</span>
-                  <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                  <span className="inline-flex items-center rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
                     Not Requested
                   </span>
                 </div>

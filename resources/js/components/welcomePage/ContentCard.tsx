@@ -77,19 +77,16 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
             {currentStepContent.header}
           </CardTitle>
           {currentStepContent.subheader && (
-            <p className="mt-2 text-base font-medium text-secondary">
+            <p className="mt-2 text-base font-medium text-welcome-secondary">
               {currentStepContent.subheader}
             </p>
           )}
         </CardHeader>
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-none [&>p]:text-welcome-foreground">
-            {currentStepContent.content.split('\n').map((paragraph: string, i: number) => (
-              <p key={i} className="mb-3 last:mb-0">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+        <div className="flex-1 overflow-y-scroll">
+          <div 
+            className="max-w-none text-welcome-foreground prose dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: currentStepContent.content }}
+          /> 
         </div>
         <div className="pt-4">
           {currentStepContent.buttonLinks?.length > 0 && (
@@ -147,7 +144,7 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
                       ? 'bg-destructive/10 text-destructive'
                       : currentStepContent.buttonLinks[0].status === 'On Hold' || 
                         currentStepContent.buttonLinks[0].status === 'on hold'
-                        ? 'bg-warning/10 text-warning'
+                        ? 'bg-chart-1/10 text-chart-1'
                         : currentStepContent.buttonLinks[0].status === 'done'
                           ? 'bg-success/10 text-success'
                           : 'bg-primary/10 text-primary'
@@ -172,20 +169,14 @@ export default function ContentCard({ currentStepContent, user, stage, status }:
       </Card>
 
       {/* Enhanced Alert Dialog for confirmation */}
-      <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
-        <AlertDialogContent className="max-w-2xl p-8 rounded-2xl">
-          <AlertDialogHeader className="mb-6">
+      <AlertDialog  open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+        <AlertDialogContent className="bg-welcome-background text-welcome-foreground max-w-2xl max-h-3/4 overflow-auto p-8 rounded-2xl">
+          <AlertDialogHeader className="bg-welcome-background mb-6">
             <AlertDialogTitle className="text-3xl font-bold text-welcome-foreground">
               {currentButtonText}
             </AlertDialogTitle>
-            <AlertDialogDescription className="mt-4 text-lg leading-8 text-welcome-secondary">
-              <div className="space-y-4">
-                {currentPopupContent.split('\n\n').map((para, idx) => (
-                  <p key={idx} className="text-balance">
-                    {para}
-                  </p>
-                ))}
-              </div>
+            <AlertDialogDescription className="mt-4 text-lg leading-8 prose dark:prose-invert">
+              <div dangerouslySetInnerHTML={{ __html: currentPopupContent }} />
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4">
