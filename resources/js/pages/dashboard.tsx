@@ -237,26 +237,29 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                                                 )}
                                             />
                                             <FormField
-                                                name="stage"
-                                                control={createForm.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Stage</FormLabel>
-                                                        <Select
-                                                            onValueChange={(v) => field.onChange(parseFloat(v))}
-                                                            defaultValue={field.value.toString()}
-                                                        >
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>{renderStageSelectItems()}</SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
+    name="stage"
+    control={createForm.control}
+    render={({ field }) => (
+        <FormItem>
+            <FormLabel>Stage</FormLabel>
+            <Select
+                onValueChange={(v) => field.onChange(parseFloat(v))}
+                defaultValue={field.value.toString()}
+            >
+                <FormControl>
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                    {renderStageSelectItems()}
+                    <SelectItem value="0">0. Superadmin</SelectItem> {/* Add Superadmin */}
+                </SelectContent>
+            </Select>
+            <FormMessage />
+        </FormItem>
+    )}
+/>
                                             <DialogFooter>
                                                 <Button type="submit">Save</Button>
                                             </DialogFooter>
@@ -306,57 +309,59 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody >
-                                {users.map((user) => (
-                                    <TableRow key={user.id} >
-                                        <TableCell>{user.id}</TableCell>
-                                        <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{getStageNameFromValue(user.stage, stages)}</TableCell>
-                                        <TableCell
-                                            className={(() => {
-                                                const userStageOrder = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
-                                                let statusText: string = (user.status as string) ?? 'Not Requested';
+                            <TableBody>
+    {users.map((user) => (
+        <TableRow key={user.id}>
+            <TableCell>{user.id}</TableCell>
+            <TableCell>{user.name}</TableCell>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>
+                {user.stage === 0 ? "Superadmin" : getStageNameFromValue(user.stage, stages)}
+            </TableCell>
+            <TableCell
+                className={(() => {
+                    const userStageOrder = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
+                    let statusText: string = (user.status as string) ?? 'Not Requested';
 
-                                                if (lastStageOrder > 0 && userStageOrder === lastStageOrder) {
-                                                    statusText = 'done';
-                                                }
+                    if (lastStageOrder > 0 && userStageOrder === lastStageOrder) {
+                        statusText = 'done';
+                    }
 
-                                                if (statusText === 'done') return 'text-green-600  font-medium';
-                                                if (statusText === 'on hold') return 'text-yellow-500  font-medium';
-                                                if (statusText === 'Not Requested' || statusText === 'not requested') return 'text-red-600  font-medium';
-                                                return '';
-                                            })()}
-                                        >
-                                            {(() => {
-                                                const userStageOrder = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
-                                                let statusText: string = (user.status as string) ?? 'Not Requested';
+                    if (statusText === 'done') return 'text-green-600  font-medium';
+                    if (statusText === 'on hold') return 'text-yellow-500  font-medium';
+                    if (statusText === 'Not Requested' || statusText === 'not requested') return 'text-red-600  font-medium';
+                    return '';
+                })()}
+            >
+                {(() => {
+                    const userStageOrder = typeof user.stage === 'string' ? parseFloat(user.stage) : user.stage;
+                    let statusText: string = (user.status as string) ?? 'Not Requested';
 
-                                                if (lastStageOrder > 0 && userStageOrder === lastStageOrder) {
-                                                    statusText = 'done';
-                                                }
-                                                // Normalize display for 'not requested' to 'Not Requested'
-                                                return statusText === 'not requested' ? 'Not Requested' : statusText;
-                                            })()}
-                                        </TableCell>
-                                        <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                                        <TableCell className="space-x-1 text-right">
-                                            <Button variant="ghost" size="sm" onClick={() => handleMoveToNextStage(user)}>
-                                                <ArrowRightCircle />
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleMoveToStageClick(user)}>
-                                                <ArrowRight />
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleEditClick(user)}>
-                                                <Edit />
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(user)}>
-                                                <Trash />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
+                    if (lastStageOrder > 0 && userStageOrder === lastStageOrder) {
+                        statusText = 'done';
+                    }
+                    // Normalize display for 'not requested' to 'Not Requested'
+                    return statusText === 'not requested' ? 'Not Requested' : statusText;
+                })()}
+            </TableCell>
+            <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+            <TableCell className="space-x-1 text-right">
+                <Button variant="ghost" size="sm" onClick={() => handleMoveToNextStage(user)}>
+                    <ArrowRightCircle />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleMoveToStageClick(user)}>
+                    <ArrowRight />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleEditClick(user)}>
+                    <Edit />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(user)}>
+                    <Trash />
+                </Button>
+            </TableCell>
+        </TableRow>
+    ))}
+</TableBody>
                         </Table>
                     </CardContent>
                     
@@ -413,23 +418,30 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                                 )}
                             />
                             <FormField
-                                name="stage"
-                                control={editForm.control}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Stage</FormLabel>
-                                        <Select onValueChange={(v) => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>{renderStageSelectItems()}</SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+    name="stage"
+    control={editForm.control}
+    render={({ field }) => (
+        <FormItem>
+            <FormLabel>Stage</FormLabel>
+            <Select
+                onValueChange={(v) => field.onChange(parseFloat(v))}
+                defaultValue={field.value.toString()}
+            >
+                <FormControl>
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                    {renderStageSelectItems()}
+                    <SelectItem value="0">0. Superadmin</SelectItem> {/* Added Superadmin stage */}
+                </SelectContent>
+            </Select>
+            <FormMessage />
+        </FormItem>
+    )}
+/>
+
                             <DialogFooter>
                                 <Button type="submit">Save</Button>
                             </DialogFooter>
@@ -464,24 +476,27 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                     </DialogHeader>
                     <Form {...moveToStageForm}>
                         <form onSubmit={moveToStageForm.handleSubmit(onMoveToStageSubmit)} className="space-y-4">
-                            <FormField
-                                name="stage"
-                                control={moveToStageForm.control}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Stage</FormLabel>
-                                        <Select onValueChange={(v) => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>{renderStageSelectItems()}</SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                        <FormField
+    name="stage"
+    control={moveToStageForm.control}
+    render={({ field }) => (
+        <FormItem>
+            <FormLabel>Stage</FormLabel>
+            <Select onValueChange={(v) => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}>
+                <FormControl>
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                    {renderStageSelectItems()}
+                    <SelectItem value="0">0. Superadmin</SelectItem> {/* Added Superadmin stage */}
+                </SelectContent>
+            </Select>
+            <FormMessage />
+        </FormItem>
+    )}
+/>
                             <DialogFooter>
                                 <Button type="submit">Move</Button>
                             </DialogFooter>
