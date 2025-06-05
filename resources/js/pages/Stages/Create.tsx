@@ -67,48 +67,25 @@ export default function StageCreate() {
     });
 
     const onSubmit = (data: StageFormValues) => {
-        // Clean up description, email_content, and button_linking popups
-        if (data.description === '<p><br></p>') {
-            data.description = '';
-        }
-
-        if (data.email_content === '<p><br></p>') {
-            data.email_content = '';
-        }
-
-        if (data.button_linking && data.button_linking.length > 0) {
-            data.button_linking = data.button_linking.map(button => {
-                if (button.popup === '<p><br></p>') {
-                    return { ...button, popup: '' };
-                }
-                return button;
-            });
-        }
-
         const formData = new FormData();
         formData.append('order', data.order.toString());
         formData.append('name', data.name);
         formData.append('title', data.title);
-        
-        // Always send subtitle, description, email_subject, email_content, even if empty (after cleaning)
-        formData.append('subtitle', data.subtitle ?? '');
-        formData.append('description', data.description ?? '');
-        formData.append('email_subject', data.email_subject ?? '');
-        formData.append('email_content', data.email_content ?? '');
+        if (data.subtitle) formData.append('subtitle', data.subtitle);
+        if (data.description) formData.append('description', data.description);
+        if (data.email_subject) formData.append('email_subject', data.email_subject); // Added email_subject
+        if (data.email_content) formData.append('email_content', data.email_content); // Added email_content
 
         if (data.button_linking && data.button_linking.length > 0) {
             data.button_linking.forEach((button, index) => {
                 formData.append(`button_linking[${index}][text]`, button.text);
-                // Always append popup, using the cleaned value or '' if undefined.
-                formData.append(`button_linking[${index}][popup]`, button.popup ?? '');
+                if (button.popup) {
+                    formData.append(`button_linking[${index}][popup]`, button.popup);
+                }
                 if (button.status) {
                     formData.append(`button_linking[${index}][status]`, button.status);
                 }
             });
-        } else {
-            // If button_linking is undefined, an empty array, or became empty,
-            // send an empty value to signal the backend.
-            formData.append('button_linking', '');
         }
 
         const imageInput = document.getElementById('image') as HTMLInputElement;
