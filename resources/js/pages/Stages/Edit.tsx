@@ -357,20 +357,21 @@ export default function StageEdit({ stage }: EditStageProps) {
                                             <div className="mb-2">
                                                 <div className="flex items-center justify-between">
                                                     <p className="mb-2 text-sm dark:text-gray-300">Current Image:</p>
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="destructive" 
-                                                        onClick={() => setRemoveImage(true)}
-                                                        className="h-8 px-3 text-xs"
-                                                    >
-                                                        Remove Image
-                                                    </Button>
+                                                    
                                                 </div>
                                                 <img
                                                     src={`/storage/${stage.image}`}
                                                     alt={stage.name}
                                                     className="max-h-[200px] rounded-md border border-[#3E3E3A]"
                                                 />
+                                                <Button 
+                                                        type="button" 
+                                                        variant="destructive" 
+                                                        onClick={() => setRemoveImage(true)}
+                                                        className="h-8 mt-2 px-3 text-xs"
+                                                    >
+                                                        Remove Image
+                                                    </Button>
                                             </div>
                                         )}
                                         {(removeImage || !stage.image) && (
