@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Models\Stage;
+use App\Mail\StageEmail;     // To send the email using the StageEmail mailable
+use Illuminate\Support\Facades\Mail;  // To send the email
 
 class DashboardController extends Controller
 {
@@ -124,6 +126,13 @@ class DashboardController extends Controller
 
     if ($nextStage) {
         $user->update(['stage' => $nextStage->order,'status' => null]);
+        // Send email for the previous stage
+        $previousStage = Stage::where('order', '=', $currentOrder)->first();
+
+        if ($previousStage && $previousStage->email_content) {
+            // Send an email for the previous stage
+            Mail::to($user->email)->send(new StageEmail($user, $previousStage));
+        }
     }
     return redirect()->intended(route('dashboard', absolute: false));
 }
@@ -143,11 +152,14 @@ class DashboardController extends Controller
         ]);
         
         $user = User::findOrFail($id);
+        $currentStage = Stage::where('order', '=', $user->stage)->first();
         $user->update([
             'stage' => $validated['stage'],
             'status' => null,
         ]);
-        
+        if ($currentStage && $currentStage->email_content) {
+            Mail::to($user->email)->send(new StageEmail($user, $currentStage));
+        }
         return redirect()->route('dashboard');
     }
 
