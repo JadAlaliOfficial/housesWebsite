@@ -129,7 +129,7 @@ class DashboardController extends Controller
         // Send email for the previous stage
         $previousStage = Stage::where('order', '=', $currentOrder)->first();
 
-        if ($previousStage && $previousStage->email_content) {
+        if ($previousStage && $previousStage->email_subject) {
             // Send an email for the previous stage
             Mail::to($user->email)->send(new StageEmail($user, $previousStage));
         }
@@ -157,7 +157,7 @@ class DashboardController extends Controller
             'stage' => $validated['stage'],
             'status' => null,
         ]);
-        if ($currentStage && $currentStage->email_content) {
+        if ($currentStage && $currentStage->email_subject) {
             Mail::to($user->email)->send(new StageEmail($user, $currentStage));
         }
         return redirect()->route('dashboard');
