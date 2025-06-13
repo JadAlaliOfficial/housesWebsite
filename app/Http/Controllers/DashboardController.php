@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use App\Models\Stage;
 use App\Mail\StageEmail;     // To send the email using the StageEmail mailable
 use Illuminate\Support\Facades\Mail;  // To send the email
+use App\Mail\UserWelcome;  // To send the email using the UserWelcome mailabl
 
 class DashboardController extends Controller
 {
@@ -58,12 +59,13 @@ class DashboardController extends Controller
         return redirect()->back()->withErrors(['stage' => 'No valid stage found. Please create a stage first.']);
     }
 
-    User::create([
+    $user = User::create([
         'name' => $validated['name'],
         'email' => $validated['email'],
-        'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        'password' => Hash::make($validated['password']),
         'stage' => $stage,
     ]);
+    Mail::to($user->email)->send(new UserWelcome($user));
 
     return redirect()->route('dashboard');
 }
