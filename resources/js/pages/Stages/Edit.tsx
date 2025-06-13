@@ -82,6 +82,8 @@ export default function StageEdit({ stage }: EditStageProps) {
 
     // Add this state to track if the image should be removed
     const [removeImage, setRemoveImage] = useState(false);
+    // Add state to track the preview of the newly selected image
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     
     const onSubmit = (data: StageFormValues) => {
         // Clean up description, email_content, and button_linking popups
@@ -120,19 +122,29 @@ export default function StageEdit({ stage }: EditStageProps) {
             formData.append('button_linking', '');
         }
 
-        // Add this condition to handle image removal
+        // Handle image upload/removal
+        const imageInput = document.getElementById('image') as HTMLInputElement;
         if (removeImage) {
-            formData.append('image', '');
-        } else {
-            const imageInput = document.getElementById('image') as HTMLInputElement;
-            if (imageInput?.files?.[0]) {
-                formData.append('image', imageInput.files[0]);
-            }
+            formData.append('remove_image', 'true');
+        } else if (imageInput?.files?.[0]) {
+            formData.append('image', imageInput.files[0]);
         }
 
         router.post(route('stages.update', stage.id), formData, {
             forceFormData: true,
         });
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+            setRemoveImage(false); // Reset removeImage when a new file is selected
+        }
     };
 
     return (
@@ -353,11 +365,10 @@ export default function StageEdit({ stage }: EditStageProps) {
                                 <div className="space-y-2">
                                     <FormLabel className="dark:text-[#E6E6E6]">Image (Optional)</FormLabel>
                                     <div className="flex flex-col gap-4">
-                                        {stage.image && !removeImage && (
+                                        {(stage.image && !removeImage && !imagePreview) ? (
                                             <div className="mb-2">
                                                 <div className="flex items-center justify-between">
                                                     <p className="mb-2 text-sm dark:text-gray-300">Current Image:</p>
-                                                    
                                                 </div>
                                                 <img
                                                     src={`/storage/${stage.image}`}
@@ -365,23 +376,46 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     className="max-h-[200px] rounded-md border border-[#3E3E3A]"
                                                 />
                                                 <Button 
+                                                    type="button" 
+                                                    variant="destructive" 
+                                                    onClick={() => setRemoveImage(true)}
+                                                    className="h-8 mt-2 px-3 text-xs"
+                                                >
+                                                    Remove Image
+                                                </Button>
+                                            </div>
+                                        ) : imagePreview ? (
+                                            <div className="mb-2">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="mb-2 text-sm dark:text-gray-300">New Image Preview:</p>
+                                                    <Button 
                                                         type="button" 
                                                         variant="destructive" 
-                                                        onClick={() => setRemoveImage(true)}
-                                                        className="h-8 mt-2 px-3 text-xs"
+                                                        onClick={() => {
+                                                            setImagePreview(null);
+                                                            const input = document.getElementById('image') as HTMLInputElement;
+                                                            if (input) input.value = '';
+                                                        }}
+                                                        className="h-8 px-3 text-xs"
                                                     >
-                                                        Remove Image
+                                                        Remove
                                                     </Button>
+                                                </div>
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Preview"
+                                                    className="max-h-[200px] rounded-md border border-[#3E3E3A]"
+                                                />
                                             </div>
-                                        )}
-                                        {(removeImage || !stage.image) && (
-                                            <Input
-                                                id="image"
-                                                type="file"
-                                                accept="image/*"
-                                                className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
-                                            />
-                                        )}
+                                        ) : null}
+
+                                        <Input
+                                            id="image"
+                                            type="file"
+                                            accept="image/*"
+                                            className="border-[#3E3E3A] dark:bg-[#1a1a1a] dark:text-[#E6E6E6]"
+                                            onChange={handleImageChange}
+                                        />
                                         <p className="text-xs text-gray-500 dark:text-gray-400">Supported formats: JPG, PNG, GIF. Max size: 2MB.</p>
                                     </div>
                                 </div>
