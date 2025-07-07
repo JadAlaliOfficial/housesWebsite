@@ -71,14 +71,21 @@
                             </p>
                             
                             <div class="content-block">
-                                <p>Welcome to the PNE Homes family – we're beyond excited to start this amazing journey with you!</p>
-                                
-                                <p>Your dream home is about to come to life, and we couldn't be more thrilled to be by your side. So buckle up – this is where the adventure begins!</p>
-                                
-                                <p>We'll be in touch very soon with your first milestone and all the details to get things rolling. In the meantime, feel free to reach out with any ideas or questions – we're here for it all.</p>
-                                
-                                <p>Let's make something incredible together!</p>
-                            </div>
+    <p>Welcome to the PNE Homes family – we're beyond excited to start this amazing journey with you!</p>
+
+    <p>Your dream home is about to come to life, and we couldn't be more thrilled to be by your side. So buckle up – this is where the adventure begins!</p>
+
+    <p>We'll be in touch very soon with your first milestone and all the details to get things rolling. In the meantime, feel free to reach out with any ideas or questions – we're here for it all.</p>
+
+    <p>Let's make something incredible together!</p>
+
+    <p style="margin-top: 16px;">
+        🔍 You can view your personalized journey and upcoming milestones on our 
+        <a href="https://roadmap.pnehomes.com" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: 500;">
+            Roadmap Dashboard
+        </a>.
+    </p>
+</div>
                             
                             <p style="margin: 24px 0 0; font-size: 16px; color: #1a1a1a;">
                                 Best regards,<br>
