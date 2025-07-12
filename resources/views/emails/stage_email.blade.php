@@ -61,22 +61,30 @@
                     </tr>
                     
                     <!-- Body Content -->
-                    <tr>
-                        <td class="email-body">
-                            <p style="margin: 0 0 16px; font-size: 16px; color: #1a1a1a;">
-                                Hello <strong>{{ $user->name }}</strong>,
-                            </p>
-                            
-                            <div class="content-block">
-                                {!! $content !!}
-                            </div>
-                            
-                            <p style="margin: 24px 0 0; font-size: 16px; color: #1a1a1a;">
-                                Best regards,<br>
-                                <strong>PNE Homes Team</strong>
-                            </p>
-                        </td>
-                    </tr>
+<tr>
+    <td class="email-body">
+        <p style="margin: 0 0 16px; font-size: 16px; color: #1a1a1a;">
+            Hello <strong>{{ $user->name }}</strong>,
+        </p>
+        
+        <div class="content-block">
+            {!! $content !!}
+        </div>
+
+        <p style="margin-top: 24px; font-size: 16px; color: #1a1a1a;">
+            🔍 You can view your personalized journey and upcoming milestones on our 
+            <a href="https://roadmap.pnehomes.com" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: 500;">
+                Roadmap Dashboard
+            </a>.
+        </p>
+
+        <p style="margin: 24px 0 0; font-size: 16px; color: #1a1a1a;">
+            Best regards,<br>
+            <strong>PNE Homes Team</strong>
+        </p>
+    </td>
+</tr>
+
                     
                     <!-- Footer -->
                     <tr>
