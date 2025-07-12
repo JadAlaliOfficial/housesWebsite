@@ -10,6 +10,7 @@
     html.dark { background-color: var(--color-background); }
   </style>
 
+  <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
   {{-- Fonts --}}
   <link rel="preconnect" href="https://fonts.bunny.net">
