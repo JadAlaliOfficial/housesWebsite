@@ -6,9 +6,16 @@ import { Head, usePage } from '@inertiajs/react';
 import { useEffect, ReactNode } from 'react';
 import { useAppearance } from '@/hooks/appearance-context';
 
+
+type TrustedPartnersFile = {
+  id?: number;
+  fileLink: string | null;
+};
+
 type WelcomeLayoutProps = {
   children: ReactNode;
   title?: string;
+  file?: TrustedPartnersFile | null; // 👈 add this
 };
 
 type WelcomePageData = SharedData & {
@@ -16,7 +23,7 @@ type WelcomePageData = SharedData & {
   stages: Stage[];
 };
 
-export default function WelcomeLayout({ children, title = 'Roadmap' }: WelcomeLayoutProps) {
+export default function WelcomeLayout({ children, title = 'Roadmap', file }: WelcomeLayoutProps) {
   const { auth, user, stages } = usePage<WelcomePageData>().props;
   
   // Use the appearance hook instead of local state
@@ -43,7 +50,7 @@ export default function WelcomeLayout({ children, title = 'Roadmap' }: WelcomeLa
         <link rel="icon" href={AppLogo} type="image/png" />
       </Head>
       <div className="flex min-h-screen flex-col items-center bg-welcome-background p-4 text-foreground lg:justify-center lg:p-4 dark:bg-welcome-background dark:text-foreground">
-        <Header auth={auth} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <Header auth={auth} darkMode={darkMode} toggleDarkMode={toggleDarkMode} file={file} />
         <div className="flex w-full flex-col items-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
           {/* Horizontal Stepper */}
           <StepperSection activeStep={activeStep} steps={stepLabels} />

@@ -20,6 +20,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/theme', [ThemeController::class, 'index'])
     ->name('admin.theme');
     Route::post('/admin/theme', [ThemeController::class, 'update'])->name('admin.theme.update');
+    Route::post('/admin/upload-pdf',[DashboardController::class, 'upload'])->name('admin.trusted-partners.pdf.upload');
 });
 
 require __DIR__ . '/settings.php';

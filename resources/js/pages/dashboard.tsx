@@ -16,6 +16,11 @@ import * as z from 'zod';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
 
+interface TrustedPartnersFile {
+  id?: number;
+  fileLink: string | null;
+}
+
 interface Stage {
     id: number;
     name: string;
@@ -24,6 +29,7 @@ interface Stage {
 interface DashboardProps {
     users: User[];
     stages: Stage[];
+    file?: TrustedPartnersFile | null;
 }
 
 const userFormSchema = z.object({
@@ -45,13 +51,14 @@ function getCookie(name: string): string | null {
     return match ? decodeURIComponent(match[2]) : null;
 }
 
-export default function Dashboard({ users, stages }: DashboardProps) {
+export default function Dashboard({ users, stages,file }: DashboardProps) {
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isMoveToStageDialogOpen, setIsMoveToStageDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
     // notification states for each button
     const [resetNotification, setResetNotification] = useState<{ message: string; isError?: boolean } | null>(null);
     const [regNotification, setRegNotification] = useState<{ message: string; isError?: boolean } | null>(null);
@@ -127,6 +134,21 @@ export default function Dashboard({ users, stages }: DashboardProps) {
         });
         setIsMoveToStageDialogOpen(true);
     };
+    const downloadUrl = file?.fileLink ? (file.fileLink.startsWith('http') ? file.fileLink : `/storage/${file.fileLink}`) : null;
+    const handlePdfUpload = () => {
+  if (!pdfFile) return;
+  const formData = new FormData();
+  formData.append('file', pdfFile);
+
+  router.post(route('admin.trusted-partners.pdf.upload'), formData, {
+    forceFormData: true,
+    onStart: () => setIsUploading(true),
+    onFinish: () => {
+      setIsUploading(false);
+      setPdfFile(null);
+    },
+  });
+};
     const renderStageSelectItems = () =>
         stages.map((stage) => (
             <SelectItem key={stage.id} value={stage.order.toString()}>
@@ -291,7 +313,31 @@ export default function Dashboard({ users, stages }: DashboardProps) {
                                     </span>
                                 )}
                             </div>
+{/* Trusted Partners PDF uploader */}
+<div className="flex items-center gap-2">
+  <Input
+    type="file"
+    accept="application/pdf"
+    onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
+    className="w-48"
+  />
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={handlePdfUpload}
+    disabled={!pdfFile || isUploading}
+  >
+    {isUploading ? 'Uploading…' : 'Upload PDF'}
+  </Button>
 
+  {downloadUrl && (
+    <Button asChild variant="outline" size="sm">
+      <a href={downloadUrl} target="_blank" rel="noopener noreferrer" download>
+        Download PDF
+      </a>
+    </Button>
+  )}
+</div>
                             <Users className="text-muted-foreground h-6 w-6" />
                         </div>
                     </CardHeader>

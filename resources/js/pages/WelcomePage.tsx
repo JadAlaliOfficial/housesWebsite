@@ -3,14 +3,22 @@ import ContentCard from '@/components/welcomePage/ContentCard';
 import WelcomeLayout from '@/layouts/WelcomeLayout';
 import { type ButtonLink, type Status, type Stage, type User } from '@/types';
 import { usePage } from '@inertiajs/react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertCircle } from 'lucide-react';
+
+type TrustedPartnersFile = {
+  id?: number;
+  fileLink: string | null;
+};
 
 type WelcomePageProps = {
   user: User;
   stages: Stage[];
+  file?: TrustedPartnersFile | null;
 };
 
 export default function WelcomePage() {
-  const { user, stages } = usePage<WelcomePageProps>().props;
+  const { user, stages, file } = usePage<WelcomePageProps>().props;
   
   // Get the current stage based on user.stage
   const currentStage = stages.find(stage => stage.order === Number(user.stage)) || stages[0];
@@ -48,7 +56,9 @@ export default function WelcomePage() {
   const status: Status = 'not requested';
 
   return (
-    <WelcomeLayout>
+    <WelcomeLayout
+    file={file}
+    >
       {/* Image Card */}
       <ImageCard 
         currentStage={currentStage}

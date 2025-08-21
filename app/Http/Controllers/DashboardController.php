@@ -11,6 +11,8 @@ use App\Models\Stage;
 use App\Mail\StageEmail;     // To send the email using the StageEmail mailable
 use Illuminate\Support\Facades\Mail;  // To send the email
 use App\Mail\UserWelcome;  // To send the email using the UserWelcome mailabl
+use App\Models\TrustedPartnersPDF;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
@@ -27,10 +29,13 @@ class DashboardController extends Controller
             ->get();
 
         $stages = Stage::select('id', 'name', 'order')->orderBy('order')->get();
+
+        $trustedPartnersFile = TrustedPartnersPDF::first();
         
         return Inertia::render('dashboard', [
             'users' => $users,
             'stages' => $stages,
+            'file' => $trustedPartnersFile,
         ]);
     }
 
@@ -201,5 +206,34 @@ class DashboardController extends Controller
     $user->update(['status' => $button['status']]);
 
     return redirect()->route('dashboard')->with('success', 'Status updated.');
+}
+
+public function upload(Request $request)
+{
+    // 1) Validate input (expects <input name="file">)
+    $validated = $request->validate([
+        'file' => ['required', 'file', 'mimes:pdf', 'max:20480'], // 20MB
+    ]);
+
+    $uploadedFile = $validated['file'];
+
+    // 2) Store with original filename
+    //    "trusted-partners" is the folder inside storage/app/public
+    $originalName = $uploadedFile->getClientOriginalName();
+    $path = $uploadedFile->storeAs('trusted-partners', $originalName, 'public');
+
+    // 3) Load (or create) the single row
+    $record = TrustedPartnersPDF::first() ?? new TrustedPartnersPDF();
+
+    // 4) Delete old file if present (but don’t delete if it’s the same name being overwritten)
+    if (!empty($record->fileLink) && Storage::disk('public')->exists($record->fileLink) && $record->fileLink !== $path) {
+        Storage::disk('public')->delete($record->fileLink);
+    }
+
+    // 5) Save new path
+    $record->fileLink = $path;
+    $record->save();
+
+    return redirect()->route('dashboard')->with('success', 'PDF uploaded successfully.');
 }
 }

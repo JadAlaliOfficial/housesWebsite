@@ -2,6 +2,8 @@ import WebsiteIcon from '@/assets/logo.png';
 import { Link } from '@inertiajs/react';
 import { LogOut } from 'lucide-react';
 import { type User } from '@/types';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertCircle } from 'lucide-react';
 
 interface HeaderProps {
     auth: {
@@ -9,14 +11,42 @@ interface HeaderProps {
     };
     darkMode: boolean;
     toggleDarkMode: () => void;
+    file?: {
+        id?: number;
+        fileLink: string | null;
+    } | null;
 }
 
-export default function Header({ auth, darkMode, toggleDarkMode }: HeaderProps) {
+export default function Header({ auth, darkMode, toggleDarkMode, file}: HeaderProps) {
+    const fileLink = file?.fileLink ?? null;
+    const downloadUrl = fileLink
+        ? (fileLink.startsWith('http') ? fileLink : `/storage/${fileLink}`)
+        : null;
+    const fileName = fileLink ? fileLink.split('/').pop() ?? 'file.pdf' : '';
     return (
         <header className="mb-2 w-full max-w-[1200px]">
             <nav className="flex w-full items-center justify-between">
                 <div className="flex items-center">
                     <img src={WebsiteIcon} alt="Website Logo" className="h-[8vh] w-auto" />
+                    {downloadUrl && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <a
+                                        href={downloadUrl}
+                                        download
+                                        aria-label={`Download ${fileName}`}
+                                        className="ml-3 inline-flex items-center rounded-full p-2 hover:bg-gray-100 transition-colors duration-200 dark:hover:bg-gray-800"
+                                    >
+                                        <AlertCircle className="h-5 w-5 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300" />
+                                    </a>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Download {fileName}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
                 </div>
                 {/* Navigation buttons on the far right */}
                 <div className="flex items-center gap-4">

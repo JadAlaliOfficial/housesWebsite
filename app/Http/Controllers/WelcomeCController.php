@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Stage;
+use App\Models\TrustedPartnersPDF;
+
 class WelcomeCController extends Controller
 {
     public function index()
@@ -25,10 +27,12 @@ class WelcomeCController extends Controller
             'subtitle' => $stage->subtitle,
         ];
     });
+    $TrustedPartnersPDF = TrustedPartnersPDF::first();
 
     return Inertia::render('welcome', [
         'user' => Auth::user(),
         'stages' => $stagesTransformed,
+        'file'=> $TrustedPartnersPDF,
     ]);
 }
 }
