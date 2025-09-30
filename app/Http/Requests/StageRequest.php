@@ -13,6 +13,27 @@ class StageRequest extends FormRequest
     {
         return true; // Adjust based on your authorization logic
     }
+    protected function prepareForValidation(): void
+    {
+        $buttonLinking = $this->input('button_linking', []);
+        
+        if (!empty($buttonLinking)) {
+            foreach ($buttonLinking as $index => $button) {
+                if (isset($button['replacing_text'])) {
+                    // Convert string "true"/"false" to actual boolean
+                    $buttonLinking[$index]['replacing_text'] = filter_var(
+                        $button['replacing_text'], 
+                        FILTER_VALIDATE_BOOLEAN, 
+                        FILTER_NULL_ON_FAILURE
+                    );
+                }
+            }
+            
+            $this->merge([
+                'button_linking' => $buttonLinking
+            ]);
+        }
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -33,6 +54,7 @@ class StageRequest extends FormRequest
             'button_linking.*.text' => 'required_with:button_linking|string|max:255',
             'button_linking.*.popup' => 'string|max:500',
             'button_linking.*.status' => 'string|max:255',
+            'button_linking.*.replacing_text' => 'boolean', // New validation rule
         ];
 
         // Only require image for store (create) requests

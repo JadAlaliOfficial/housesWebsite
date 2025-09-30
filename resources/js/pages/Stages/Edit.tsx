@@ -10,6 +10,7 @@ import {useState} from 'react';
 import { Head, router } from '@inertiajs/react';
 import { useFieldArray, useForm as useHookForm } from 'react-hook-form';
 import * as z from 'zod';
+import { Switch } from '@/components/ui/switch';
 
 interface EditStageProps {
     stage: Stage;
@@ -52,6 +53,7 @@ const stageFormSchema = z.object({
                 text: z.string().min(1, { message: 'Button text is required.' }),
                 popup: z.union([z.string().max(500), z.literal('')]).optional(),
                 status: z.union([z.string(), z.literal('')]).optional(),
+                replacing_text: z.boolean().optional(), // New field
             }),
         )
         .optional(),
@@ -71,8 +73,13 @@ export default function StageEdit({ stage }: EditStageProps) {
             description: stage.description || '',
             email_subject: stage.email_subject || '', // Added email_subject
             email_content: stage.email_content || '', // Added email_content
-            button_linking: typeof stage.button_linking === 'string' ? JSON.parse(stage.button_linking) : (stage.button_linking || []),
-        },
+            button_linking: typeof stage.button_linking === 'string' 
+        ? JSON.parse(stage.button_linking).map(btn => ({
+            ...btn,
+            replacing_text: btn.replacing_text ?? false // Handle existing data without this field
+          }))
+        : (stage.button_linking || []),
+},
     });
 
     const { fields, append, remove } = useFieldArray({
@@ -106,17 +113,19 @@ export default function StageEdit({ stage }: EditStageProps) {
         formData.append('email_subject', data.email_subject ?? ''); // Added email_subject
         formData.append('email_content', data.email_content ?? ''); // Added email_content
 
-        if (data.button_linking && data.button_linking.length > 0) {
-            data.button_linking.forEach((button, index) => {
-                formData.append(`button_linking[${index}][text]`, button.text);
-                if (button.popup) {
-                    formData.append(`button_linking[${index}][popup]`, button.popup);
-                }
-                if (button.status) {
-                    formData.append(`button_linking[${index}][status]`, button.status);
-                }
-            });
-        } else {
+       if (data.button_linking && data.button_linking.length > 0) {
+        data.button_linking.forEach((button, index) => {
+            formData.append(`button_linking[${index}][text]`, button.text);
+            if (button.popup) {
+                formData.append(`button_linking[${index}][popup]`, button.popup);
+            }
+            if (button.status) {
+                formData.append(`button_linking[${index}][status]`, button.status);
+            }
+            // Add the new replacing_text field
+            formData.append(`button_linking[${index}][replacing_text]`, (button.replacing_text || false).toString());
+        });
+    } else {
             // If button_linking is undefined or an empty array,
             // send '[]' to signal the backend to clear all buttons.
             formData.append('button_linking', '');
@@ -346,6 +355,26 @@ export default function StageEdit({ stage }: EditStageProps) {
                                                     </FormItem>
                                                 )}
                                             />
+                                            <FormField
+            control={form.control}
+            name={`button_linking.${index}.replacing_text`}
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <FormLabel className="text-base">Replacing Text</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                            Enable this to replace the button text dynamically
+                        </div>
+                    </div>
+                    <FormControl>
+                        <Switch
+                            checked={field.value || false}
+                            onCheckedChange={field.onChange}
+                        />
+                    </FormControl>
+                </FormItem>
+            )}
+        />
                                             <Button type="button" variant="destructive" onClick={() => remove(index)} className=" w-1/4 justify-self-start">
                                                 Remove Button
                                             </Button>
@@ -355,7 +384,7 @@ export default function StageEdit({ stage }: EditStageProps) {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => append({ text: '', popup: '', status: '' })}
+                                        onClick={() => append({ text: '', popup: '', status: '', replacing_text: false })}
                                         className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
                                     >
                                         Add Button

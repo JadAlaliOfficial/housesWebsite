@@ -63,6 +63,7 @@ export interface ButtonLink {
     text: string;
     popup?: string;
     status?: string;
+    replacing_text?: boolean; // New field added - defaults to false if not provided
 }
 
 export type StepKey = 'First step' | 'Second step' | 'Third step' | 'Fourth step' | 'Fifth step' | 'Sixth step' | 'Final step';

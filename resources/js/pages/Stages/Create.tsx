@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router } from '@inertiajs/react';
 import { useFieldArray, useForm as useHookForm } from 'react-hook-form';
 import * as z from 'zod';
+import { Switch } from '@/components/ui/switch';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -38,6 +39,7 @@ const stageFormSchema = z.object({
                 text: z.string().min(1, { message: 'Button text is required.' }),
                 popup: z.union([z.string().max(500), z.literal('')]).optional(),
                 status: z.union([z.string(), z.literal('')]).optional(),
+                replacing_text: z.boolean().optional(), // New field
             }),
         )
         .optional(),
@@ -77,16 +79,18 @@ export default function StageCreate() {
         if (data.email_content) formData.append('email_content', data.email_content); // Added email_content
 
         if (data.button_linking && data.button_linking.length > 0) {
-            data.button_linking.forEach((button, index) => {
-                formData.append(`button_linking[${index}][text]`, button.text);
-                if (button.popup) {
-                    formData.append(`button_linking[${index}][popup]`, button.popup);
-                }
-                if (button.status) {
-                    formData.append(`button_linking[${index}][status]`, button.status);
-                }
-            });
-        }
+        data.button_linking.forEach((button, index) => {
+            formData.append(`button_linking[${index}][text]`, button.text);
+            if (button.popup) {
+                formData.append(`button_linking[${index}][popup]`, button.popup);
+            }
+            if (button.status) {
+                formData.append(`button_linking[${index}][status]`, button.status);
+            }
+            // Add the new replacing_text field
+            formData.append(`button_linking[${index}][replacing_text]`, (button.replacing_text || false).toString());
+        });
+    }
 
         const imageInput = document.getElementById('image') as HTMLInputElement;
         if (imageInput?.files?.[0]) {
@@ -273,6 +277,26 @@ export default function StageCreate() {
                                                     </FormItem>
                                                 )}
                                             />
+                                            <FormField
+            control={form.control}
+            name={`button_linking.${index}.replacing_text`}
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <FormLabel className="text-base">Replacing Text</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                            Enable this to replace the button text dynamically
+                        </div>
+                    </div>
+                    <FormControl>
+                        <Switch
+                            checked={field.value || false}
+                            onCheckedChange={field.onChange}
+                        />
+                    </FormControl>
+                </FormItem>
+            )}
+        />
                                             <Button
                                                 type="button"
                                                 variant="destructive"
@@ -288,7 +312,7 @@ export default function StageCreate() {
                                         type="button"
                                         variant="outline"
                                         className="border-[#3E3E3A] dark:text-[#E6E6E6] dark:hover:border-[#62605b] w-1/4 justify-self-start"
-                                        onClick={() => append({ text: '', popup: '', status: '' })}
+                                        onClick={() => append({ text: '', popup: '', status: '', replacing_text: false })}
                                     >
                                         Add Button
                                     </Button>

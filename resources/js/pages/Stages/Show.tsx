@@ -122,6 +122,12 @@ export default function StageShow({ stage }: ShowStageProps) {
                     <span className="text-lg font-bold dark:text-gray-300">Status:</span>
                     <p className="ml-2 whitespace-pre-wrap dark:text-[#E6E6E6]">{button.status}</p>
                   </div>
+                  <div className="mt-2">
+            <span className="text-lg font-bold dark:text-gray-300">Replacing Text:</span>
+            <p className="ml-2 whitespace-pre-wrap dark:text-[#E6E6E6]">
+                {button.replacing_text ? 'Enabled' : 'Disabled'}
+            </p>
+        </div>
                 </div>
               ))}
             </CardContent>
